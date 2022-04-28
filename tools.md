@@ -1,0 +1,1 @@
+https://www.rookout.com/blog/developer-tooling-for-kubernetes-in-2021-part-2

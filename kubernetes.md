@@ -1,0 +1,1 @@
+https://venturebeat.com/2021/12/20/the-state-of-cloud-native-development-kubernetes-is-on-the-rise/
