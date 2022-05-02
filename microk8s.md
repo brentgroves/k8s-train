@@ -2,9 +2,13 @@ MicroK8s is a low-ops, minimal production Kubernetes.
 
 MicroK8s is an open-source system for automating deployment, scaling, and management of containerised applications. It provides the functionality of core Kubernetes components, in a small footprint, scalable from a single node to a high-availability production cluster.
 
-https://discuss.kubernetes.io/t/microk8s-failed-to-join-rpi-cluster-error-code-500/14767/6
+How to install High Availability Cluster
+https://www.youtube.com/watch?v=dNT5uEeJBSw&t=391s
+
 https://microk8s.io/docs/addon-dashboard
 Remember to append microk8s to all commands
+
+Issue: could not deploy a helm chart until I did this.
 microk8s.kubectl config view --raw > ~/.kube/config
 https://kubernetes.io/docs/concepts/overview/components/
 

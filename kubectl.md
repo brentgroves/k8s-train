@@ -28,3 +28,9 @@ kubectl get pods -o wide
 
 
 kubectl get replicaset – manages the replicas of the pod 
+
+Create resources from manifest
+kubectl apply -f filename.yaml
+
+Delete resource from manifest
+kubectl delete -f filename.yaml
