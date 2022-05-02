@@ -33,6 +33,9 @@ https://artifacthub.io/packages/helm/artifact-hub/artifact-hub
 helm repo add artifact-hub https://artifacthub.github.io/helm-charts
 helm search repo nginx
 
+TROUBLE-SHOOT
+https://github.com/k3s-io/k3s/issues/1126
+kubectl config view --raw >~/.kube/config
 
 How to create a helm chart:
 helm create demo
