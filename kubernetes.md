@@ -1,3 +1,17 @@
+Main node is avi-ubu
+It's IP range:
+172.20.88.16 
+172.20.88.17
+172.20.88.18
+172.20.88.19
+https://www.how2shout.com/linux/assign-multiple-ip-address-to-ubuntu-20-04-single-network-interface-gui/ 
+use the gui for permanent changes 
+use the command line for temporary changes
+ip addr add 172.20.88.17/22 brd 172.20.91.255 dev ens3
+ip addr del 172.20.88.17/22 brd 172.20.91.255 dev ens3
+sudo systemctl restart NetworkManager
+
+
 https://kubernetes.io/docs/concepts/overview/components/
 
 https://venturebeat.com/2021/12/20/the-state-of-cloud-native-development-kubernetes-is-on-the-rise/
