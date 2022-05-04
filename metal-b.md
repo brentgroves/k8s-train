@@ -20,6 +20,15 @@ kubectl -n metallb-system get pods -w
 # inspect new IPs of services
 kubectl get svc
 
+# test load balance service
+kubectl create -f lb-deployment.yaml
+
+$ kubectl get service nginx
+NAME    TYPE           CLUSTER-IP     EXTERNAL-IP     PORT(S)        AGE
+nginx   LoadBalancer   10.21.82.141   172.20.88.17   80:30967/TCP   4m40s
+
+curl 172.20.88.17
+
 Could have configured the install more using a values.yaml file like this article.
 https://platform9.com/blog/using-metallb-to-add-the-loadbalancer-service-to-kubernetes-environments/
 
