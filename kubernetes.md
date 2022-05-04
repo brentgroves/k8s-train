@@ -9,7 +9,9 @@ use the gui for permanent changes
 use the command line for temporary changes
 ip addr add 172.20.88.17/22 brd 172.20.91.255 dev ens3
 ip addr del 172.20.88.17/22 brd 172.20.91.255 dev ens3
+-- the restart command did not seem to do anything
 sudo systemctl restart NetworkManager
+
 
 
 https://kubernetes.io/docs/concepts/overview/components/

@@ -1,4 +1,14 @@
-Zero-to-Kubernetes how I installed metallb: microk8s enable metallb:10.0.0.100-10.0.0.200
+Zero-to-Kubernetes how I installed metallb: microk8s enable metallb:172.20.88.16-172.20.88.16
+
+https://github.com/metallb/metallb/issues/308#:~:text=To%20migrate%20an%20IP%20address,within%20the%20metallb%2Dsystem%20namespace.
+How to update the IP address range
+look at the old metalb config map
+kubectl get configmap config -n metallb-system -o yaml
+# note the old IPs allocated to the services
+kubectl get svc
+k8s-namespace-frt   proxy-public           LoadBalancer   10.152.183.155   172.20.88.16   80:30622/TCP             47h
+
+kubectl -n metallb-system get cm config
 
 Could have configured the install more using a values.yaml file like this article.
 https://platform9.com/blog/using-metallb-to-add-the-loadbalancer-service-to-kubernetes-environments/
