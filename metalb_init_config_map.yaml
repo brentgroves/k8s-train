@@ -1,6 +1,0 @@
-configInline:
-  address-pools:
-   - name: default
-     protocol: layer2
-     addresses:
-     - 172.20.88.16-172.20.88.19
