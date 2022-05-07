@@ -1,0 +1,17 @@
+{
+	"folders": [
+		{
+			"name": "k8s-train",
+			"path": "."
+		},
+		{
+			"name": "UDPServer",
+			"path": "../UDPServer"
+		},
+		{
+			"name": "UDPClient",
+			"path": "../UDPClient"
+		}
+	],
+	"settings": {}
+}

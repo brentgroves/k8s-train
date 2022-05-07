@@ -1,0 +1,37 @@
+https://www.datree.io/resources/a-kubernetes-guide-for-labels-and-selectors
+
+Labels vs annotations
+Annotations are also key-value pairs that are attached to objects and are used to describe Kubernetes resources. Unlike labels, annotations are not used to identify and select resources. 
+
+You may want to check out the Kubernetes docs for some examples of when to use annotations. For example, you may want to use annotations to include phone numbers or emails of people responsible for specific objects.
+
+What are selectors?
+A label selector is just a fancy name of the mechanism that enables the client/user to target (select) a set of objects by their labels. 
+
+It can be confusing because different resource types support different selector types - `selector` vs `matchExpressions` vs `matchLabels`: 
+
+Newer resource types like Deployment, Job, DaemonSet, and ReplicaSet support both `matchExpressions` and `matchLabels`, but only one of them can be nested under the `selector` section, while the other resources  (like “Service” in the example above) support only `matchLabels`, so there is no need to define which option is used, because only one option is available for those resource types. 
+
+Labels restrictions
+You can apply any and as many labels as you like, but remember:
+
+Labels key and value pairs are case sensitive
+Label key and value pairs must begin and end with an alphanumeric character ([a-z0-9A-Z])
+Labels key and value pairs can contain only special characters such as dashes (-), underscores (_), dots (.)
+Label key can’t be empty while a value can
+Label key supports optional prefix, separated by a slash (/)
+Label key (w/o prefix) and value must be 63 characters or less
+Standard Kubernetes labels
+By default, every Kubernetes Node comes with the following pre-populated labels:
+
+kubernetes.io/arch (e.g. kubernetes.io/arch=arm64)
+kubernetes.io/os (e.g. kubernetes.io/os=linux)
+kubernetes.io/hostname (e.g. kubernetes.io/hostname=ip-172-85-189-120.ec2.internal)
+node.kubernetes.io/instance-type (e.g. node.kubernetes.io/instance-type=m3.large)
+topology.kubernetes.io/region (e.g. topology.kubernetes.io/region=us-east-1)
+topology.kubernetes.io/zone* (e.g. topology.kubernetes.io/zone=us-east-1c)
+*this label is also applied by default on PersistentVolume
+
+It is possible to create pods that will get scheduled on specific nodes by defining the `nodeSelector`:
+
+Add a prefix (when necessary) to avoid naming conflicts - labels without a prefix are private to users. The shared prefix ensures that shared labels do not interfere with custom user labels. Much like how you wouldn’t want to ‘pollute the global namespace’ in any codebase, adding a prefix to your labels can also help you & your team avoid naming conflicts today & in the future.

@@ -1,3 +1,15 @@
+https://metallb.universe.tf/concepts/
+MetalLB hooks into your Kubernetes cluster, and provides a network load-balancer implementation. In short, it allows you to create Kubernetes services of type LoadBalancer in clusters that don’t run on a cloud provider, and thus cannot simply hook into paid products to provide load balancers.
+
+Address Allocation
+In a Kubernetes cluster on a cloud provider, you request a load balancer, and your cloud platform assigns an IP address to you. In a bare-metal cluster, MetalLB is responsible for that allocation.
+MetalLB cannot create IP addresses out of thin air, so you do have to give it pools of IP addresses that it can use. MetalLB will take care of assigning and unassigning individual addresses as services come and go, but it will only ever hand out IPs that are part of its configured pools.
+External Announcement
+After MetalLB has assigned an external IP address to a service, it needs to make the network beyond the cluster aware that the IP “lives” in the cluster. MetalLB uses standard routing protocols to achieve this: ARP, NDP, or BGP.
+
+The firewall uses the Address Resolution Protocol (ARP) and Neighbor Discover Protocol (NDP) to enable communication between hosts residing on the same subnet. Using these protocols, the firewall creates IP/MAC mappings and stores them in neighbor caches. Static mappings are also supported.
+
+It has two features that work together to provide this service: address allocation, and external announcement.
 Zero-to-Kubernetes how I installed metallb: microk8s enable metallb:172.20.88.16-172.20.88.16
 https://metallb.universe.tf/configuration/
 https://github.com/metallb/metallb/issues/308#:~:text=To%20migrate%20an%20IP%20address,within%20the%20metallb%2Dsystem%20namespace.

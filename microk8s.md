@@ -39,10 +39,6 @@ Ingress is probably the most powerful way to expose your services, but can also 
 Ingress is the most useful if you want to expose multiple services under the same IP address, and these services all use the same L7 protocol (typically HTTP). You only pay for one load balancer if you are using the native GCP integration, and because Ingress is “smart” you can get a lot of features out of the box (like SSL, Auth, Routing, etc)
 
 
-
-
-
-
 https://microk8s.io/docs/services-and-ports
 Upon deployment MicroK8s creates a Certificate Authority, a signed server certificate and a service account key file. These files are stored under /var/snap/microk8s/current/certs/. Kubelet and the API server are aware of the same CA and so the signed server certificate is used by the API server to authenticate with kubelet (--kubelet-client-certificate).
 printenv $KUBECONFIG
@@ -63,3 +59,15 @@ If the node you are adding is not reachable through the default interface you ca
 Avilla main cluster 1 ip configured in metal b
 microk8s enable metallb:172.20.88.16:172.20.88.16
 
+https://ridwanfajar.medium.com/getting-started-with-microk8s-up-and-running-kubernetes-locally-310640dae156
+Local Registry
+D. Deploy My Own Docker Image
+It might have a different way to start with. You have to build your image first in your local machine then we have to push it to MicroK8S internal registry. Afterwards, we could deploy our own local image to MicroK8S.
+
+D.1. Register my local Docker image to MicroK8S
+Before we push our image to MicroK8S, we have to save built image as a Tarball. Once you have built your image using docker build , you are able to save the image as Tarball using docker save command. The Tarball will be pushed to MicroK8S and will be reusable as long you specify “never pull” policy on the deployment configuration.
+
+Now you may push the image to MicroK8S by execute those commands below:
+
+$ sudo docker save pokemon-api > pokemon-api.tar
+$ microk8s ctr images ls | grep pokemon
