@@ -29,5 +29,12 @@ kubectl apply -f local-storage-dir-pvc.yaml
 Look at the PersistentVolumeClaim:
 kubectl get pvc local-storage-dir-pvc
 
+The output shows that the STATUS is Pending. This means PVC has not yet been used by an application pod. The next step is to create a Pod that uses your PersistentVolumeClaim as a volume.
+
+NAME                 STATUS    VOLUME   CAPACITY   ACCESS MODES   STORAGECLASS       AGE
+local-hostpath-pvc   Pending                                      openebs-hostpath   3m7s
+
+https://openebs.io/docs/user-guides/localpv-hostpath#create-storageclass
+
 systemctl enable iscsid
 microk8s enable rbac dns openebs storage
