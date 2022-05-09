@@ -1,0 +1,1 @@
+https://logz.io/blog/a-practical-guide-to-kubernetes-logging/
