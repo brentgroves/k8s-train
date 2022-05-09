@@ -6,6 +6,25 @@ NodePort
 What about NodePort? It’s definitely something we could set up and manage, however the key word here would be “manage” – which is something we are trying to get away from. What would this setup look like? We would end up exposing deployments with a service type of NodePort which would give us the Nodes as Endpoints with high numbered ports, something like 192.168.16.22:30000. For each node where we have this socket, we would need to manage a LoadBalancer outside of Kubernetes to distribute traffic between them. If we are using a static list then we need to be able to poll/update the list when there are changes. Sounds like additional work that could result in dropped traffic if the list hasn’t been updated.
 
 
+How to use a static IP address so that a UDP server can be configured to send data to a microservice.
+https://docs.microsoft.com/en-us/azure/aks/static-ip
+https://beroux.com/english/articles/kubernetes/?part=2
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    service.beta.kubernetes.io/azure-load-balancer-resource-group: myResourceGroup
+  name: azure-load-balancer
+spec:
+  loadBalancerIP: 40.121.183.52
+  type: LoadBalancer
+  ports:
+  - port: 80
+  selector:
+    app: azure-load-balancer
+
 
 apiVersion: v1
 kind: Service
