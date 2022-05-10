@@ -159,3 +159,50 @@ kubectl apply -f local-storage-dir-pod.yaml
 
 Look at the PersistentVolumeClaim:
 kubectl get pvc local-storage-dir-pvc
+
+Remember to append microk8s to all commands
+microk8s.kubectl config view --raw > ~/.kube/config
+
+
+helm upgrade --cleanup-on-fail \
+  --install helm-release-frt jupyterhub/jupyterhub \
+  --namespace k8s-namespace-frt \
+  --create-namespace \
+  --version=1.2.0 \
+  --values config.yaml
+
+how to change
+modify config.yaml
+then run 
+
+helm upgrade --cleanup-on-fail \
+    helm-release-frt jupyterhub/jupyterhub \
+  --namespace k8s-namespace-frt \
+  --version=1.2.0 \
+  --values config.yaml
+
+Thank you for installing JupyterHub!
+Your release is named "helm-release-frt" and installed into the namespace "k8s-namespace-frt".
+You can check whether the hub and proxy are ready by running:
+ kubectl --namespace=k8s-namespace-frt get pod
+
+and watching for both those pods to be in status 'Running'.
+
+You can find the public (load-balancer) IP of JupyterHub by running:
+
+  kubectl -n k8s-namespace-frt get svc proxy-public -o jsonpath='{.status.loadBalancer.ingress[].ip}'
+
+It might take a few minutes for it to appear!
+
+To get full information about the JupyterHub proxy service run:
+
+  kubectl --namespace=k8s-namespace-frt get svc proxy-public
+#to remain sane set namespace default
+microk8s.kubectl config set-context $(microk8s.kubectl config current-context) --namespace k8s-namespace-frt
+
+If you have questions, please:
+
+  1. Read the guide at https://z2jh.jupyter.org
+  2. Ask for help or chat to us on https://discourse.jupyter.org/
+  3. If you find a bug please report it at https://github.com/jupyterhub/zero-to-jupyterhub-k8s/issues
+
