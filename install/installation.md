@@ -64,9 +64,7 @@ microk8s helm3 repo update
 GitHub - kubernetes-csi/csi-driver-nfs: This driver allows Kubernetes to access NFS server on Linux node. ... Install driver on a Kubernetes cluster
 
 Then, install the Helm chart under the kube-system namespace with:
-microk8s helm3 install csi-driver-nfs csi-driver-nfs/csi-driver-nfs \
-    --namespace kube-system \
-    --set kubeletDir=/var/snap/microk8s/common/var/lib/kubelet
+microk8s helm3 install csi-driver-nfs csi-driver-nfs/csi-driver-nfs --namespace kube-system --set kubeletDir=/var/snap/microk8s/common/var/lib/kubelet
 
 hmicrok8s helm3 install csi-driver-nfs csi-driver-nfs/csi-driver-nfs \
     --namespace kube-system \
@@ -96,6 +94,7 @@ spec:
     requests:
       storage: 5Gi
 
+microk8s kubectl get sc 
 Then create the PVC with:
 
 microk8s kubectl apply -f - < pvc-nfs.yaml
