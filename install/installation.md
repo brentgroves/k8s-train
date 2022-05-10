@@ -68,7 +68,10 @@ microk8s helm3 install csi-driver-nfs csi-driver-nfs/csi-driver-nfs \
     --namespace kube-system \
     --set kubeletDir=/var/snap/microk8s/common/var/lib/kubelet
 
-    
+hmicrok8s helm3 install csi-driver-nfs csi-driver-nfs/csi-driver-nfs \
+    --namespace kube-system \
+    --set kubeletDir=/var/snap/microk8s/common/var/lib/kubelet
+
 
  At this point, you should also be able to list the available CSI drivers in your Kubernetes cluster …
 
