@@ -127,6 +127,13 @@ For load balancing in a MicroK8s cluster, MetalLB can make use of Ingress to pro
 microk8s enable ingress
 
 
+microk8s enable openebs
+
+sudo mkdir -p /srv/k8s
+sudo chown nobody:nogroup /srv/k8s
+sudo chmod 0777 /srv/k8s
+
+
 
 
 kubectl describe pods -n openebs openebs-apiserver-bc6bc5986-xk4rw
