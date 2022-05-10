@@ -52,6 +52,10 @@ echo '/srv/nfs 10.0.0.0/24(rw,sync,no_subtree_check)' | sudo tee /etc/exports
 
 sudo systemctl restart nfs-kernel-server
 
+https://www.digitalocean.com/community/tutorials/how-to-set-up-an-nfs-mount-on-ubuntu-18-04
+sudo mkdir -p /nfs/general
+sudo mount 172.20.88.16:/srv/nfs /nfs/general
+
 Enable the Helm3 addon (if not already enabled) and add the repository for the NFS CSI driver:
 microk8s enable helm3
 microk8s helm3 repo add csi-driver-nfs https://raw.githubusercontent.com/kubernetes-csi/csi-driver-nfs/master/charts
@@ -64,12 +68,37 @@ microk8s helm3 install csi-driver-nfs csi-driver-nfs/csi-driver-nfs \
     --namespace kube-system \
     --set kubeletDir=/var/snap/microk8s/common/var/lib/kubelet
 
+    
+
  At this point, you should also be able to list the available CSI drivers in your Kubernetes cluster …
 
 microk8s kubectl get csidrivers
 
 create a storage class
 microk8s kubectl apply -f - < sc-nfs.yaml
+
+Create a new PVC
+The final step is to create a new PersistentVolumeClaim using the nfs-csi storage class. This is as simple as specifying storageClassName: nfs-csi in the PVC definition, for example:
+
+# pvc-nfs.yaml
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: my-pvc
+spec:
+  storageClassName: nfs-csi
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests:
+      storage: 5Gi
+
+Then create the PVC with:
+
+microk8s kubectl apply -f - < pvc-nfs.yaml
+
+If everything has been configured correctly, you should be able to check the PVC…
+microk8s kubectl describe pvc my-pvc
 
 microk8s enable metallb:172.20.88.16-172.20.88.19,10.1.1.83,172.20.1.190
 
