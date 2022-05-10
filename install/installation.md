@@ -102,6 +102,30 @@ microk8s kubectl apply -f - < pvc-nfs.yaml
 If everything has been configured correctly, you should be able to check the PVC…
 microk8s kubectl describe pvc my-pvc
 
-microk8s enable metallb:172.20.88.16-172.20.88.19,10.1.1.83,172.20.1.190
+https://microk8s.io/docs/addon-metallb
+microk8s enable metallb:172.20.88.16-172.20.88.19
+update its configmap
+
+https://metallb.universe.tf/configuration/
+https://github.com/metallb/metallb/issues/308#:~:text=To%20migrate%20an%20IP%20address,within%20the%20metallb%2Dsystem%20namespace.
+How to update the IP address range
+look at the old metalb config map
+kubectl -n metallb-system get cm config
+kubectl get configmap config -n metallb-system -o yaml
+# note the old IPs allocated to the services
+kubectl get svc --all-namespaces
+k8s-namespace-frt   proxy-public           LoadBalancer   10.152.183.155   172.20.88.16   80:30622/TCP             47h
+# delete the old configmap
+kubectl -n metallb-system delete cm config
+# apply the new configmap
+kubectl apply -f metalb.yaml
+
+https://microk8s.io/docs/addon-metallb
+Setting up a MetalLB/Ingress service
+For load balancing in a MicroK8s cluster, MetalLB can make use of Ingress to properly balance across the cluster ( make sure you have also enabled ingress in MicroK8s first, with microk8s enable ingress). To do this, it requires a service. A suitable ingress service is defined here:
+
+
+
+
 
 kubectl describe pods -n openebs openebs-apiserver-bc6bc5986-xk4rw
