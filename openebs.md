@@ -1,4 +1,11 @@
+https://openebs.io/docs/user-guides/localpv-hostpath#create-storageclass
+https://openebs.io/docs/user-guides/localpv-hostpath#create-storageclass
+https://openebs.io/docs/user-guides/localpv-hostpath#create-storageclass
+https://openebs.io/docs/user-guides/localpv-hostpath#create-storageclass
+
+
 https://github.com/openebs/openebs/issues/3317
+https://openebs.io/docs/troubleshooting/volume-provisioning#application-crashloopbackoff
 https://openebs.io/docs/user-guides/quickstart
 
 https://www.youtube.com/watch?v=ay0eSiVi8e8

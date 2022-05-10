@@ -11,6 +11,8 @@ The firewall uses the Address Resolution Protocol (ARP) and Neighbor Discover Pr
 
 It has two features that work together to provide this service: address allocation, and external announcement.
 Zero-to-Kubernetes how I installed metallb: microk8s enable metallb:172.20.88.16-172.20.88.16
+metallb:172.20.88.16-172.20.88.19,10.1.1.83,172.20.1.190
+
 https://metallb.universe.tf/configuration/
 https://github.com/metallb/metallb/issues/308#:~:text=To%20migrate%20an%20IP%20address,within%20the%20metallb%2Dsystem%20namespace.
 How to update the IP address range
