@@ -68,6 +68,8 @@ microk8s helm3 install csi-driver-nfs csi-driver-nfs/csi-driver-nfs \
 
 microk8s kubectl get csidrivers
 
+create a storage class
+microk8s kubectl apply -f - < sc-nfs.yaml
 
 microk8s enable metallb:172.20.88.16-172.20.88.19,10.1.1.83,172.20.1.190
 
