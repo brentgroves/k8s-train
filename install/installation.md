@@ -154,11 +154,15 @@ The output shows that the STATUS is Pending. This means PVC has not yet been use
 NAME                 STATUS    VOLUME   CAPACITY   ACCESS MODES   STORAGECLASS       AGE
 local-hostpath-pvc   Pending                                      openebs-hostpath   3m7s
 
-
+https://openebs.io/docs/user-guides/localpv-hostpath#create-storageclass
+kubectl delete pod hello-local-hostpath-pod
 kubectl apply -f local-storage-dir-pod.yaml
 
 Look at the PersistentVolumeClaim:
 kubectl get pvc local-storage-dir-pvc
+
+kubectl exec hello-local-storage-dir-pod -- cat /mnt/store/greet.txt
+
 
 Remember to append microk8s to all commands
 microk8s.kubectl config view --raw > ~/.kube/config
@@ -207,4 +211,12 @@ If you have questions, please:
   1. Read the guide at https://z2jh.jupyter.org
   2. Ask for help or chat to us on https://discourse.jupyter.org/
   3. If you find a bug please report it at https://github.com/jupyterhub/zero-to-jupyterhub-k8s/issues
+
+
+
+
+OPEN ISSUE
+https://kubernetes.slack.com
+OPENEBS IS CRASHING
+
 
