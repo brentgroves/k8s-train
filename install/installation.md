@@ -163,6 +163,8 @@ kubectl get pvc local-storage-dir-pvc
 Remember to append microk8s to all commands
 microk8s.kubectl config view --raw > ~/.kube/config
 
+helm repo add jupyterhub https://jupyterhub.github.io/helm-chart/
+helm repo update
 
 helm upgrade --cleanup-on-fail \
   --install helm-release-frt jupyterhub/jupyterhub \
