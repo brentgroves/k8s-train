@@ -62,6 +62,8 @@ microk8s helm3 repo add csi-driver-nfs https://raw.githubusercontent.com/kuberne
 microk8s helm3 repo update
 
 GitHub - kubernetes-csi/csi-driver-nfs: This driver allows Kubernetes to access NFS server on Linux node. ... Install driver on a Kubernetes cluster
+Overview. CSI is an open standard API that enables Kubernetes to expose arbitrary storage systems to containerized workloads. Kubernetes volumes are managed by vendor-specific storage drivers, which have historically been compiled into Kubernetes binaries.
+
 
 Then, install the Helm chart under the kube-system namespace with:
 microk8s helm3 install csi-driver-nfs csi-driver-nfs/csi-driver-nfs --namespace kube-system --set kubeletDir=/var/snap/microk8s/common/var/lib/kubelet
@@ -101,6 +103,10 @@ microk8s kubectl apply -f - < pvc-nfs.yaml
 
 If everything has been configured correctly, you should be able to check the PVC…
 microk8s kubectl describe pvc my-pvc
+
+What is OCI Object Storage
+https://docs.oracle.com/en-us/iaas/Content/Object/Concepts/objectstorageoverview.htm
+OCI Object Storage provides a dedicated (non-shared) storage 'namespace' or container unique to each customer for all stored buckets and objects. This encapsulation provides end-to-end visibility and reduces the risk of exposed buckets.
 
 https://microk8s.io/docs/addon-metallb
 microk8s enable metallb:172.20.88.16-172.20.88.19
@@ -154,14 +160,17 @@ The output shows that the STATUS is Pending. This means PVC has not yet been use
 NAME                 STATUS    VOLUME   CAPACITY   ACCESS MODES   STORAGECLASS       AGE
 local-hostpath-pvc   Pending                                      openebs-hostpath   3m7s
 
-https://openebs.io/docs/user-guides/localpv-hostpath#create-storageclass
-kubectl delete pod hello-local-hostpath-pod
+
 kubectl apply -f local-storage-dir-pod.yaml
 
 Look at the PersistentVolumeClaim:
 kubectl get pvc local-storage-dir-pvc
 
 kubectl exec hello-local-storage-dir-pod -- cat /mnt/store/greet.txt
+
+https://openebs.io/docs/user-guides/localpv-hostpath#create-storageclass
+kubectl delete pod hello-local-storage-dir-pod
+kubectl delete pvc local-storage-dir-pvc
 
 
 Remember to append microk8s to all commands

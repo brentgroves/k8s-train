@@ -1,8 +1,8 @@
 https://kubernetes.io/docs/reference/kubectl/cheatsheet/
 kubectl get deployment --namespace default
 connect to container
-kubectl exec --stdin --tty udpclient-8678bc87d6-25jsb -- /bin/bash
-kubectl logs udpclient-f758d96dc-lxzsg
+kubectl exec --stdin --tty udpclient-f758d96dc-wgf6c -- /bin/bash
+kubectl logs udpclient-f758d96dc-wgf6c
 https://stackoverflow.com/questions/43969743/logs-in-kubernetes-pod-not-showing-up
 
 https://www.mirantis.com/blog/introduction-to-yaml-creating-a-kubernetes-deployment/
