@@ -79,6 +79,9 @@ sudo mkdir -p /srv/mysql
 sudo chmod 777 /srv/mysql
 sudo chown nobody:nogroup /srv/mysql
 
+Deploy the PV and PVC of the YAML file:
+
+kubectl apply -f mysql-pv.yaml
 
 https://kubernetes.io/docs/concepts/storage/persistent-volumes/
 A PersistentVolume (PV) is a piece of storage in the cluster that has been provisioned by an administrator or dynamically provisioned using Storage Classes. It is a resource in the cluster just like a node is a cluster resource. PVs are volume plugins like Volumes, but have a lifecycle independent of any individual Pod that uses the PV. This API object captures the details of the implementation of the storage, be that NFS, iSCSI, or a cloud-provider-specific storage system.
@@ -119,5 +122,51 @@ spec:
   resources:
     requests:
       storage: 20Gi
+
+
+https://kubernetes.io/docs/tasks/run-application/run-single-instance-stateful-application/
+
+kubectl describe deployment mysql
+
+List the pods created by the Deployment:
+
+ kubectl get pods -l app=mysql
+The output is similar to this:
+
+ NAME                   READY     STATUS    RESTARTS   AGE
+ mysql-63082529-2z3ki   1/1       Running   0          3m
+Inspect the PersistentVolumeClaim:
+
+ kubectl describe pvc mysql-pv-claim
+
+ kubectl run -it --rm --image=mysql:5.6 --restart=Never mysql-client -- mysql -h mysql -ppassword
+
+ Updating 
+The image or any other part of the Deployment can be updated as usual with the kubectl apply command. Here are some precautions that are specific to stateful apps:
+
+Don't scale the app. This setup is for single-instance apps only. The underlying PersistentVolume can only be mounted to one Pod. For clustered stateful apps, see the StatefulSet documentation.
+Use strategy: type: Recreate in the Deployment configuration YAML file. This instructs Kubernetes to not use rolling updates. Rolling updates will not work, as you cannot have more than one Pod running at a time. The Recreate strategy will stop the first pod before creating a new one with the updated configuration.
+
+create database test;
+CREATE TABLE IF NOT EXISTS tasks (
+    title VARCHAR(255) NOT NULL,
+)  ENGINE=INNODB;
+
+CREATE TABLE tasks (
+    title VARCHAR(255) NOT NULL,
+);
+insert into task(title)
+values ('title1');
+
+Deleting a deployment 
+Delete the deployed objects by name:
+
+kubectl delete deployment,svc mysql
+kubectl delete pvc mysql-pv-claim
+kubectl delete pv mysql-pv-volume
+
+If you manually provisioned a PersistentVolume, you also need to manually delete it, as well as release the underlying resource. If you used a dynamic provisioner, it automatically deletes the PersistentVolume when it sees that you deleted the PersistentVolumeClaim. Some dynamic provisioners (such as those for EBS and PD) also release the underlying resource upon deleting the PersistentVolume.
+
+https://kubernetes.io/docs/concepts/storage/volume-snapshots/
 
 
