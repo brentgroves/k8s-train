@@ -1,5 +1,8 @@
 https://kubernetes.io/docs/tasks/run-application/run-single-instance-stateful-application/
-
+https://docs.pivotal.io/tanzu-mysql-kubernetes/1-0/accessing.html
+https://phoenixnap.com/kb/kubernetes-mysql
+https://docs.pivotal.io/tanzu-mysql-kubernetes/1-0/connecting-apps.html
+kubectl exec --stdin --tty mysql-7cd567cc69-bsj88 -- /bin/bash
 Create a PersistentVolume referencing a disk in your environment.
 Create a MySQL Deployment.
 Expose MySQL to other pods in the cluster at a known DNS name.
@@ -82,6 +85,19 @@ sudo chown nobody:nogroup /srv/mysql
 Deploy the PV and PVC of the YAML file:
 
 kubectl apply -f mysql-pv.yaml
+Deploy the contents of the YAML file:
+
+kubectl apply -f mysql-deployment_nodeport.yaml
+
+Display information about the Deployment:
+
+kubectl describe deployment mysql
+
+Inspect the PersistentVolumeClaim:
+
+kubectl describe pvc mysql-pv-claim
+
+kubectl get services mysql
 
 https://kubernetes.io/docs/concepts/storage/persistent-volumes/
 A PersistentVolume (PV) is a piece of storage in the cluster that has been provisioned by an administrator or dynamically provisioned using Storage Classes. It is a resource in the cluster just like a node is a cluster resource. PVs are volume plugins like Volumes, but have a lifecycle independent of any individual Pod that uses the PV. This API object captures the details of the implementation of the storage, be that NFS, iSCSI, or a cloud-provider-specific storage system.
@@ -138,8 +154,10 @@ The output is similar to this:
 Inspect the PersistentVolumeClaim:
 
  kubectl describe pvc mysql-pv-claim
+The preceding YAML file creates a service that allows other Pods in the cluster to access the database. The Service option clusterIP: None lets the Service DNS name resolve directly to the Pod's IP address. This is optimal when you have only one Pod behind a Service and you don't intend to increase the number of Pods.
 
- kubectl run -it --rm --image=mysql:5.6 --restart=Never mysql-client -- mysql -h mysql -ppassword
+Run a MySQL client to connect to the server:
+kubectl run -it --rm --image=mysql:5.6 --restart=Never mysql-client -- mysql -h mysql -ppassword
 
  Updating 
 The image or any other part of the Deployment can be updated as usual with the kubectl apply command. Here are some precautions that are specific to stateful apps:
