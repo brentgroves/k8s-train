@@ -1,5 +1,11 @@
 https://kubernetes.io/docs/tasks/run-application/run-single-instance-stateful-application/
 
+mysql -h 10.1.1.83 -P 31008 -u root -ppassword
+kubectl run -it --rm --image=mysql:5.6 --restart=Never mysql-client -- mysql -h mysql -ppassword
+
+https://docs.pivotal.io/tanzu-mysql-kubernetes/1-0/accessing.html
+
+
 Create a PersistentVolume referencing a disk in your environment.
 Create a MySQL Deployment.
 Expose MySQL to other pods in the cluster at a known DNS name.

@@ -1,0 +1,1 @@
+https://docs.harness.io/article/mwy6zgz8gu-use-go-templating-in-kubernetes-manifests

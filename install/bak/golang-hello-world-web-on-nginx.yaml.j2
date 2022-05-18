@@ -9,12 +9,12 @@ metadata:
     nginx.ingress.kubernetes.io/ssl-redirect: "false" 
 spec:
   tls:
-  - hosts: 
-    - microk8s.local
+  - hosts: {{ cert_domains_primary_ingress | to_json }}
     # secret must be in same namespace
     secretName: tls-credential
   rules:
-  - host: microk8s.local
+
+  - host: {{ cert_domains_primary_ingress | first }}
     http:
       paths:
       - pathType: Prefix #Exact

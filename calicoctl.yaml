@@ -1,0 +1,178 @@
+# Calico Version v3.23.1
+# https://projectcalico.docs.tigera.io/releases#v3.23.1
+# This manifest includes the following component versions:
+#   calico/ctl:v3.23.1
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: calicoctl
+  namespace: kube-system
+
+---
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: calicoctl
+  namespace: kube-system
+spec:
+  nodeSelector:
+    kubernetes.io/os: linux
+  hostNetwork: true
+  serviceAccountName: calicoctl
+  containers:
+  - name: calicoctl
+    image: calico/ctl:v3.23.1
+    command:
+      - /calicoctl
+    args:
+      - version
+      - --poll=1m
+    env:
+    - name: DATASTORE_TYPE
+      value: kubernetes
+
+---
+
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: calicoctl
+rules:
+  - apiGroups: [""]
+    resources:
+      - namespaces
+      - nodes
+    verbs:
+      - get
+      - list
+      - update
+  - apiGroups: [""]
+    resources:
+      - nodes/status
+    verbs:
+      - update
+  - apiGroups: [""]
+    resources:
+      - pods
+      - serviceaccounts
+    verbs:
+      - get
+      - list
+  - apiGroups: [""]
+    resources:
+      - pods/status
+    verbs:
+      - update
+  - apiGroups: ["crd.projectcalico.org"]
+    resources:
+      - bgppeers
+      - bgpconfigurations
+      - clusterinformations
+      - felixconfigurations
+      - globalnetworkpolicies
+      - globalnetworksets
+      - ippools
+      - ipreservations
+      - kubecontrollersconfigurations
+      - networkpolicies
+      - networksets
+      - hostendpoints
+      - ipamblocks
+      - blockaffinities
+      - ipamhandles
+      - ipamconfigs
+    verbs:
+      - create
+      - get
+      - list
+      - update
+      - delete
+  - apiGroups: ["networking.k8s.io"]
+    resources:
+      - networkpolicies
+    verbs:
+      - get
+      - list
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: calicoctl
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: calicoctl
+subjects:
+- kind: ServiceAccount
+  name: calicoctl
+  namespace: kube-system
+
+
+  http://frt-ubu:30002/
+  kubectl create -n stars -f https://projectcalico.docs.tigera.io/security/tutorials/kubernetes-policy-demo/policies/default-deny.yaml
+kubectl create -n client -f https://projectcalico.docs.tigera.io/security/tutorials/kubernetes-policy-demo/policies/default-deny.yaml
+
+
+kubectl create -f https://projectcalico.docs.tigera.io/security/tutorials/kubernetes-policy-demo/policies/allow-ui.yaml
+kubectl create -f https://projectcalico.docs.tigera.io/security/tutorials/kubernetes-policy-demo/policies/allow-ui-client.yaml
+
+https://docs.projectcalico.org/security/tutorials/kubernetes-policy-demo/kubernetes-demo
+https://docs.projectcalico.org/security/tutorials/kubernetes-policy-demo/kubernetes-demo
+https://docs.projectcalico.org/security/tutorials/kubernetes-policy-demo/kubernetes-demo
+
+
+kubectl delete ns client stars management-ui
+https://ahmedjama.com/blog/2020/09/getting-started-with-calico-for-k8s/
+
+kubectl delete ns client stars management-ui
+kubectl delete ns client stars management-ui
+
+
+https://docs.projectcalico.org/security/tutorials/kubernetes-policy-advanced
+
+
+https://docs.projectcalico.org/security/tutorials/kubernetes-policy-advanced
+
+https://docs.projectcalico.org/security/tutorials/kubernetes-policy-advanced
+
+Tutorial flow
+Create the Namespace and Nginx Service
+Deny all ingress traffic
+Allow ingress traffic to Nginx
+Deny all egress traffic
+Allow egress traffic to kube-dns
+Cleanup Namespace
+1. Create the namespace and nginx service
+We’ll use a new namespace for this guide. Run the following commands to create it and a plain nginx service listening on port 80.
+
+kubectl create ns advanced-policy-demo
+kubectl create deployment --namespace=advanced-policy-demo nginx --image=nginx
+kubectl expose --namespace=advanced-policy-demo deployment nginx --port=80
+
+kubectl get all --namespace=advanced-policy-demo   
+
+Verify access - allowed all ingress and egress
+Open up a second shell session which has kubectl connectivity to the Kubernetes cluster and create a busybox pod to test policy access. This pod will be used throughout this tutorial to test policy access.
+
+kubectl run --namespace=advanced-policy-demo access --rm -ti --image busybox /bin/sh
+
+Now from within the busybox “access” pod execute the following command to test access to the nginx service.
+
+wget -q --timeout=5 nginx -O -
+It should return the HTML of the nginx welcome page.
+
+Still within the busybox “access” pod, issue the following command to test access to google.com.
+
+wget -q --timeout=5 google.com -O -
+It should return the HTML of the google.com home page.
+
+cat /etc/resolv.conf
+
+
+
+
+https://docs.projectcalico.org/security/tutorials/kubernetes-policy-advanced
