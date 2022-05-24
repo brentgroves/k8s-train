@@ -155,6 +155,24 @@ https://kubernetes.io/docs/concepts/security/pod-security-policy/#host-namespace
 HostNetwork - Controls whether the pod may use the node network namespace. Doing so gives the pod access to the loopback device, services listening on localhost, and could be used to snoop on network activity of other pods on the same node.
 https://stackoverflow.com/questions/64792961/kubernetes-pod-with-hostnetwork-true-cannot-reach-external-ips-of-services-in-th
 https://stackoverflow.com/questions/70242041/how-to-connect-to-local-network-from-kubernetes-pod
+https://oteemo.com/kubernetes-networking-and-services-101/
+
+https://stackoverflow.com/questions/55458997/how-to-connect-to-a-private-ip-from-kubernetes-pod
+https://stackoverflow.com/questions/55458997/how-to-connect-to-a-private-ip-from-kubernetes-pod
+https://stackoverflow.com/questions/55458997/how-to-connect-to-a-private-ip-from-kubernetes-pod
 
 
+
+
+Pods are not allowed to connect directly outside of kubernetes network. You can find more details here. To connect external IP you have to define Endpoints and Kubernetes will redirect request from inside pod to that IP. If you private IP need any extra task like DNS configure or anything else will is out of kubernetes. For kubernetes you will need to define Endpoints. Create you Endpoints
+
+kind: Endpoints
+apiVersion: v1
+metadata:
+  name: local-ip
+subsets:
+ - addresses:
+     - ip: 10.240.0.4  # IP of your desire end point
+   ports:
+     - port: 27017     # Port that you want to access
 

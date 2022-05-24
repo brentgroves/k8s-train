@@ -1,0 +1,25 @@
+kind: "Service"
+apiVersion: "v1"
+metadata:
+  name: "busche-sql"
+spec:
+  ports:
+    -
+      name: "sql"
+      protocol: "TCP"
+      port: 1433
+      targetPort: 1433 
+---
+kind: "Endpoints"
+apiVersion: "v1"
+metadata:
+  name: "busche-sql" 
+subsets: 
+  -
+    addresses:
+      -
+        ip: "10.1.2.74" #The IP Address of the busche-sql
+    ports:
+      -
+        port: 1433 
+        name: "sql"
