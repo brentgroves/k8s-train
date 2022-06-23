@@ -1,3 +1,12 @@
+IP Address
+reports1 = 10.1.0.116
+reports2 = 10.1.0.117
+reports3 = 10.1.0.118
+moto = 10.1.1.83
+frt-ubu = 172.20.1.190
+avi-ubu = 172.20.88.16
+sudo hostnamectl set-hostname reports1
+
 https://zero-to-jupyterhub.readthedocs.io/en/latest/
 sudo snap remove microk8s
 
@@ -55,8 +64,10 @@ This only has to be done on one node. I ran it on the master node.
 This addon adds an NGINX Ingress Controller for MicroK8s. It is enabled by running the command:
 microk8s enable ingress
 
+START here: 
 Now you can enable metalb
 microk8s enable metallb:172.20.88.16-172.20.88.16,172.20.1.190-172.20.1.190,10.1.1.83-10.1.1.83
+microk8s enable metallb:10.1.0.116-10.1.0.116,10.1.0.117-10.1.0.117,10.1.0.118-10.1.0.118
 
 Setting up a MetalLB/Ingress service
 For load balancing in a MicroK8s cluster, MetalLB can make use of Ingress to properly balance across the cluster ( make sure you have also enabled ingress in MicroK8s first, with microk8s enable ingress). To do this, it requires a service. A suitable ingress service is defined here:
