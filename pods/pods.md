@@ -1,3 +1,10 @@
+https://kubernetes.io/docs/concepts/workloads/pods/
+
+Pods and controllers
+You can use workload resources to create and manage multiple Pods for you. A controller for the resource handles replication and rollout and automatic healing in case of Pod failure. For example, if a Node fails, a controller notices that Pods on that Node have stopped working and creates a replacement Pod. The scheduler places the replacement Pod onto a healthy Node.
+
+
+
 https://kubernetes.io/docs/tasks/configure-pod-container/
 
 https://www.containiq.com/post/kubernetes-image-pull-policy

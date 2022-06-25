@@ -1,5 +1,7 @@
 https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/
 
+https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/
+
 CronJob
 FEATURE STATE: Kubernetes v1.21 [stable]
 A CronJob creates Jobs on a repeating schedule.
