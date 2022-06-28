@@ -35,6 +35,22 @@ microk8s join 172.20.88.16:25000/552672885f4fcf007e153eb1ee425c2d/6bf7e3972626
 microk8s kubectl get no
 microk8s status
 
+
+
+Access Kubernetes
+
+MicroK8s bundles its own version of kubectl for accessing Kubernetes. Use it to run commands to monitor and control your Kubernetes. For example, to view your node:
+
+microk8s kubectl get nodes
+
+…or to see the running services:
+
+microk8s kubectl get services
+
+MicroK8s uses a namespaced kubectl command to prevent conflicts with any existing installs of kubectl. If you don’t have an existing install, it is easier to add an alias (append to ~/.bash_aliases) like this:
+
+alias kubectl='microk8s kubectl'
+
 Verify nodes have been added
 kubectl get node -o wide
 
