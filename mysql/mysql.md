@@ -1,7 +1,40 @@
 https://kubernetes.io/docs/tasks/run-application/run-single-instance-stateful-application/
+https://kubernetes.io/docs/tasks/run-application/run-single-instance-stateful-application/
 
+Deploy the PV and PVC of the YAML file:
+
+kubectl apply -f mysql-pv.yaml
+
+kubectl describe pv mysql-pv-volume
+kubectl describe pvc mysql-pv-claim
+
+Deploy the contents of the YAML file:
+kubectl apply -f mysql-deployment_nodeport.yaml
+
+
+Display information about the Deployment:
+kubectl describe deployment mysql
+
+List the pods created by the Deployment:
+
+
+Inspect the PersistentVolumeClaim:
+kubectl describe pvc mysql-pv-claim
+
+kubectl exec --stdin --tty mysql-7cd567cc69-l9c6j -- /bin/bash
+mysql -u root -ppassword
+create database test;
+connect using dbeaver to ip and port 31008
+Go to k8sdw folder and run test.sql
+
+apt-get install mysql-client
+mysql -h 10.1.0.116 -P 31008 -u root -ppassword
 mysql -h 10.1.1.83 -P 31008 -u root -ppassword
-kubectl run -it --rm --image=mysql:5.6 --restart=Never mysql-client -- mysql -h mysql -ppassword
+
+
+!!!! error on reports kubectl run -it --rm --image=mysql:5.6 --restart=Never mysql-client -- mysql -h mysql -ppassword
+getting reports2 name lookup failure using this command.
+
 
 https://docs.pivotal.io/tanzu-mysql-kubernetes/1-0/accessing.html
 
