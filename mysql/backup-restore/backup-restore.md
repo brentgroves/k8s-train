@@ -4,7 +4,9 @@ https://www.youtube.com/watch?v=vIIRuDtG1yI
 
 https://virtual-dba.com/blog/how-to-use-mysql-config-editor/
 mysql_config_editor print --all
+mysql_config_editor set --login-path=client --host=10.1.0.116 --port=31008 --user=root --password 
 mysql_config_editor set --login-path=client --host=frt-ubu --port=31008 --user=root --password 
+This config file is obsolete use mysql_config_editor instead.
 .my.cnf
 [client]
 user=root
@@ -14,7 +16,10 @@ backup 1 user database
 /bin/date +\%Y-\%m-\%d
 export v1=$(/bin/date +\%Y-\%m-\%d)
 
+mysqldump -u root -p -h frt-ubu --port=31008 --column-statistics=0 --add-drop-table --databases test > /home/brent/backups/db/$(/bin/date +\%Y-\%m-\%d-\%R:\%S).sql.bak
+
 mysqldump -u root -p -h frt-ubu --port=31008 --column-statistics=0 --add-drop-table --databases test > /home/bgroves@BUSCHE-CNC.COM/backups/db/$(/bin/date +\%Y-\%m-\%d-\%R:\%S).sql.bak
+
 
 mysqldump -u root -p -h frt-ubu --port=31008 --column-statistics=0 --add-drop-table --databases test > $(bash -c "cd ~ && pwd")/backups/db/$(/bin/date +\%Y-\%m-\%d-\%R:\%S).sql.bak
 
