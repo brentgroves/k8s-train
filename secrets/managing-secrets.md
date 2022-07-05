@@ -29,10 +29,10 @@ kubectl create secret generic db-user-pass \
   --from-file=username=./username.txt \
   --from-file=password=./password.txt \
   --from-file=username2=./username2.txt \
-  --from-file=password2=./password2.txt
+  --from-file=password2=./password2.txt \
   --from-file=username3=./username3.txt \
   --from-file=password3=./password3.txt
-  
+
 kubectl create secret generic db-user-pass \
   --from-literal=username='mg.odbcalbion' \
   --from-literal=password='Mob3xalbion'
