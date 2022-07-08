@@ -30,7 +30,7 @@ spec:
         app: mysql
     spec:
       containers:
-      - image: brentgroves/mysql:5.7
+      - image: brentgroves/mysql:8.0
         name: mysql
         env:
           # Use secret in real usage

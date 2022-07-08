@@ -16,7 +16,9 @@ backup 1 user database
 /bin/date +\%Y-\%m-\%d
 export v1=$(/bin/date +\%Y-\%m-\%d)
 
-mysqldump -u root -p -h frt-ubu --port=31008 --column-statistics=0 --add-drop-table --databases test > /home/brent/backups/db/$(/bin/date +\%Y-\%m-\%d-\%R:\%S).sql.bak
+mysqldump -u root -p -h 10.1.0.116 --port=31008 --column-statistics=0 --add-drop-table --databases mcpdw > /home/brent/backups/db/$(/bin/date +\%Y-\%m-\%d-\%R:\%S).sql.bak
+
+mysql -u root -p -h 10.1.0.116 test --port=31008 < ~/backups/db/BACKUPNAME.sql
 
 mysqldump -u root -p -h frt-ubu --port=31008 --column-statistics=0 --add-drop-table --databases test > /home/bgroves@BUSCHE-CNC.COM/backups/db/$(/bin/date +\%Y-\%m-\%d-\%R:\%S).sql.bak
 
@@ -24,6 +26,7 @@ mysqldump -u root -p -h frt-ubu --port=31008 --column-statistics=0 --add-drop-ta
 mysqldump -u root -p -h frt-ubu --port=31008 --column-statistics=0 --add-drop-table --databases test > $(bash -c "cd ~ && pwd")/backups/db/$(/bin/date +\%Y-\%m-\%d-\%R:\%S).sql.bak
 
 mysqldump -u root -p -h frt-ubu --port=31008 --column-statistics=0 --add-drop-table --databases test > /home/root/backups/db/$(/bin/date +\%Y-\%m-\%d-\%R:\%S).sql.bak
+
 
 export user_home=$(bash -c "cd ~ && pwd")
 
