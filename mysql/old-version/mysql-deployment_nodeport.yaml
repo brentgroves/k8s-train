@@ -30,14 +30,12 @@ spec:
         app: mysql
     spec:
       containers:
-      - image: brentgroves/mysql:5.7
+      - image: mysql:5.6
         name: mysql
         env:
           # Use secret in real usage
         - name: MYSQL_ROOT_PASSWORD
           value: password
-        - name: TZ
-          value: America/Fort_Wayne
         ports:
         - containerPort: 3306
           protocol: TCP

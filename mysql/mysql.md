@@ -1,5 +1,20 @@
+https://stackoverflow.com/questions/49959601/configure-time-zone-to-mysql-docker-container
+I created a custome docker file and tested it with docker-compose
+to get timezone configured.
+
 https://kubernetes.io/docs/tasks/run-application/run-single-instance-stateful-application/
 https://kubernetes.io/docs/tasks/run-application/run-single-instance-stateful-application/
+
+
+https://hub.docker.com/_/mysql
+
+https://dev.mysql.com/doc/mysql-installation-excerpt/8.0/en/docker-mysql-more-topics.html
+https://betterprogramming.pub/customize-your-mysql-database-in-docker-723ffd59d8fb
+
+clean-up
+kubectl delete deployment,svc mysql
+kubectl delete pvc mysql-pv-claim
+kubectl delete pv mysql-pv-volume
 
 Deploy the PV and PVC of the YAML file:
 
@@ -23,6 +38,10 @@ kubectl describe pvc mysql-pv-claim
 
 kubectl exec --stdin --tty mysql-7cd567cc69-l9c6j -- /bin/bash
 mysql -u root -ppassword
+mysql -uroot -ppassword
+https://stackoverflow.com/questions/49959601/configure-time-zone-to-mysql-docker-container
+see if the timezone is correct. use brentgroves/mysql:5.7
+select now() 
 create database test;
 connect using dbeaver to ip and port 31008
 Go to k8sdw folder and run test.sql
