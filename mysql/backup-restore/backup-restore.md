@@ -19,6 +19,7 @@ export v1=$(/bin/date +\%Y-\%m-\%d)
 mysqldump -u root -p -h 10.1.0.116 --port=31008 --column-statistics=0 --add-drop-table --routines --all-databases > /home/brent/backups/db/$(/bin/date +\%Y-\%m-\%d-\%R:\%S).sql.bak
 
 mysql -u root -p -h 10.1.0.116 test --port=31008 < ~/backups/db/BACKUPNAME.sql
+![](img/vsphere.png)
 
 mysqldump -u root -p -h frt-ubu --port=31008 --column-statistics=0 --add-drop-table --databases test > /home/bgroves@BUSCHE-CNC.COM/backups/db/$(/bin/date +\%Y-\%m-\%d-\%R:\%S).sql.bak
 
