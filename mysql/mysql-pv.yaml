@@ -6,6 +6,7 @@ metadata:
   labels:
     type: local
 spec:
+  nodeName: reports3 # schedule pod to specific node
   storageClassName: manual
   capacity:
     storage: 20Gi

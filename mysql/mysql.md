@@ -1,3 +1,27 @@
+
+https://kubernetes.io/docs/tasks/configure-pod-container/assign-pods-nodes/
+https://kubernetes.io/docs/tasks/configure-pod-container/assign-pods-nodes/
+https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/
+
+Assigning pods to nodes
+Create a pod that gets scheduled to specific node
+You can also schedule a pod to one specific node via setting nodeName.
+
+pods/pod-nginx-specific-node.yaml Copy pods/pod-nginx-specific-node.yaml to clipboard
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+spec:
+  nodeName: foo-node # schedule pod to specific node
+  containers:
+  - name: nginx
+    image: nginx
+    imagePullPolicy: IfNotPresent
+Use the configuration file to create a pod that will get scheduled on foo-node only.
+
+
+
 https://stackoverflow.com/questions/49959601/configure-time-zone-to-mysql-docker-container
 I created a custome docker file and tested it with docker-compose
 to get timezone configured.
