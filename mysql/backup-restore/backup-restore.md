@@ -16,9 +16,14 @@ backup 1 user database
 /bin/date +\%Y-\%m-\%d
 export v1=$(/bin/date +\%Y-\%m-\%d)
 
-mysqldump -u root -p -h 10.1.0.116 --port=31008 --column-statistics=0 --add-drop-table --routines --all-databases > /home/brent/backups/db/$(/bin/date +\%Y-\%m-\%d-\%R:\%S).sql.bak
+mysqldump -u root -p -h 10.1.0.118 --port=31008 --column-statistics=0 --add-drop-table --routines --all-databases > /home/brent/backups/db/$(/bin/date +\%Y-\%m-\%d-\%R:\%S).sql.bak
 
-mysql -u root -p -h 10.1.0.116 test --port=31008 < ~/backups/db/BACKUPNAME.sql
+# restore all the test database
+mysql -u root -p -h 10.1.0.118 --port=31008 < ~/backups/db/2022-07-20-18:41:40.sql.bak
+
+# restore just the test database
+mysql -u root -p -h 10.1.0.118 test --port=31008 < ~/backups/db/2022-07-20-18:41:40.sql.bak
+
 ![](img/vsphere.png)
 
 mysqldump -u root -p -h frt-ubu --port=31008 --column-statistics=0 --add-drop-table --databases test > /home/bgroves@BUSCHE-CNC.COM/backups/db/$(/bin/date +\%Y-\%m-\%d-\%R:\%S).sql.bak
