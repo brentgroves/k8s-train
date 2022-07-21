@@ -47,6 +47,8 @@ spec:
         - name: mysql-persistent-storage
           mountPath: /var/lib/mysql
       # https://stackoverflow.com/questions/60247100/hostpath-assign-persistentvolume-to-the-specific-work-node-in-cluster
+      # Don't need a persistent volume claim since this is a simple hostpath
+      # which can be set in the deployment
       affinity:               
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
