@@ -1,3 +1,16 @@
+<!-- https://stackoverflow.com/questions/60247100/hostpath-assign-persistentvolume-to-the-specific-work-node-in-cluster -->
+Assigning persistent volume to node.
+Assigning volume to node
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - ubuntu18-kubeadm-worker1  
+
+
 
 https://kubernetes.io/docs/tasks/configure-pod-container/assign-pods-nodes/
 https://kubernetes.io/docs/tasks/configure-pod-container/assign-pods-nodes/
@@ -41,6 +54,10 @@ kubectl delete pvc mysql-pv-claim
 kubectl delete pv mysql-pv-volume
 
 Deploy the PV and PVC of the YAML file:
+https://kubernetes.io/docs/tasks/configure-pod-container/configure-persistent-volume-storage/
+# This assumes that your Node uses "sudo" to run commands
+# as the superuser
+sudo mkdir /mnt/data
 
 kubectl apply -f mysql-pv.yaml
 
