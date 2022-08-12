@@ -1,0 +1,105 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: trial-balance-service
+  #namespace: default
+  labels:
+    app: trial-balance
+spec:
+  ports:
+  # port=available to other containers
+  - port: 5000
+    name: http
+    # targetPort=exposed from inside container
+    targetPort: 5000
+    protocol: TCP
+  selector:
+    app: trial-balance
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: trial-balance
+  # allow for override: kubectl -n <ns> apply ...
+  #namespace: default
+  labels:
+    app: trial-balance
+spec:
+  selector:
+    matchLabels:
+      app: trial-balance
+  # kubectl scale --replicas=x deployment/golang-hello-world-web
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: trial-balance
+      # skip any istio auto-injection
+      annotations:
+        sidecar.istio.io/inject: "false"
+    spec:
+
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - trial-balance
+            topologyKey: "kubernetes.io/hostname"
+
+      containers:
+      - name: trial-balance
+        image: brentgroves/trial-balance:1.0.0
+        # image: fabianlee/docker-golang-hello-world-web:1.0.0
+        env:
+
+        # default variables available to be overridden
+        - name: APP_CONTEXT
+          # if set to /test/' would only deliver from that path
+          value: "/tb/"
+        - name: PORT
+          value: "5000"
+
+        # Downward API support - inserts these into container as env variables
+        # https://kubernetes.io/docs/tasks/inject-data-application/environment-variable-expose-pod-information/#use-pod-fields-as-values-for-environment-variables
+        - name: MY_NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: MY_POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: MY_POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: MY_POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: MY_POD_SERVICE_ACCOUNT
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.serviceAccountName
+
+        # Abba willing implement this later
+        # livenessProbe:
+        #   httpGet:
+        #     path: /healthz
+        #     port: 8080
+        #   initialDelaySeconds: 3
+        #   periodSeconds: 3
+
+        # readinessProbe:
+        #   httpGet:
+        #     path: /healthz
+        #     port: 8080
+        #   initialDelaySeconds: 3
+        #   periodSeconds: 3
+
+      restartPolicy: Always

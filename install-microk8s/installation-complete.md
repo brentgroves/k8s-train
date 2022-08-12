@@ -60,9 +60,20 @@ and the other nodes showed the dns add-ons as enabled.
 microk8s enable dns 
 Enable this on each node.
 microk8s enable helm3
+This only has to be done on one node. I ran it on the master node.
+This addon adds an NGINX Ingress Controller for MicroK8s. It is enabled by running the command:
+Enable primary ingress
+https://microk8s.io/docs/addon-ingress
+# enables primary NGINX ingress controller
+$ microk8s enable ingress
+# wait for microk8s to be ready, ingress now enabled
+$ microk8s status --wait-ready | head -n9
+
 If RBAC is not enabled access the dashboard using the default token retrieved with:
 token=$(microk8s kubectl -n kube-system get secret | grep default-token | cut -d " " -f1)
 microk8s kubectl -n kube-system describe secret $token
+Role-based access control (RBAC) restricts network access based on a person's role within an organization and has become one of the main methods ...
+
 
 Configure networking.
 https://fabianlee.org/2021/07/29/kubernetes-microk8s-with-multiple-metallb-endpoints-and-nginx-ingress-controllers/
@@ -75,15 +86,132 @@ The MetalB is lv 4 and the ingress is lv 7 of the osi model
 so the traffic is first seen by the metalb loadbalance which then sends it to one of the ingress controllers to decide which pod to 
 send it to using an ingress object.
 
+
 DO THIS FIRST BEFORE ENABLING METALB
 This only has to be done on one node. I ran it on the master node.
 This addon adds an NGINX Ingress Controller for MicroK8s. It is enabled by running the command:
 microk8s enable ingress
 
-START here: 
-Now you can enable metalb
 microk8s enable metallb:172.20.88.16-172.20.88.16,172.20.1.190-172.20.1.190,10.1.1.83-10.1.1.83
-microk8s enable metallb:10.1.0.116-10.1.0.116,10.1.0.117-10.1.0.117,10.1.0.118-10.1.0.118
+reports1 = 10.1.0.116
+reports2 = 10.1.0.117
+reports3 = 10.1.0.118
+moto = 10.1.1.83
+frt-ubu = 172.20.1.190
+avi-ubu = 172.20.88.16
+
+# enable MetalLB to use IP range, then allow settle
+# dev mcp
+$ microk8s enable metallb:172.20.88.16-172.20.88.16,172.20.1.190-172.20.1.190,10.1.1.83-10.1.1.83
+# prod mcp
+$ microk8s enable metallb:10.1.0.116-10.1.0.116,10.1.0.117-10.1.0.117,10.1.0.118-10.1.0.118
+$ sleep 15
+
+# wait for microk8s to be ready, metallb now enabled
+$ microk8s status --wait-ready | head -n8
+
+# view MetalLB objects
+$ microk8s kubectl get all -n metallb-system
+
+# show MetalLB configmap with IP used
+microk8s kubectl get configmap/config -n metallb-system -o yaml
+
+Enable Secondary Ingress
+To create a secondary ingress, we must go beyond using the microk8s ‘ingress’ add-on.  I have put a DaemonSet definition into github as nginx-ingress-secondary-micro8s-controller.yaml.j2, which you can apply like below.
+
+# apply DaemonSet that creates secondary ingress
+wget https://raw.githubusercontent.com/fabianlee/microk8s-nginx-istio/main/roles/add_secondary_ingress/templates/nginx-ingress-secondary-microk8s-controller.yaml.j2
+
+microk8s kubectl apply -f nginx-ingress-secondary-microk8s-controller.yaml.j2
+
+# you should now see both:
+# 'nginx-ingress-microk8s-controller' and 
+# 'nginx-ingress-private-microk8s-controller'
+microk8s kubectl get all --namespace ingress
+While kubectl does fetch any remote manifest URL provided, I like to download these manifest so they can be referenced later or changed if necessary.
+
+
+Create Ingress Services
+Then you need to create two Services, one for the primary ingress using the first MetalLB IP address and another for the secondary using the second MetalLB IP address.
+
+Download the nginx-ingress-service-primary-and-secondary.yaml.j2 template, and do a couple of replacements before applying with kubectl.
+
+# download template
+wget https://raw.githubusercontent.com/fabianlee/microk8s-nginx-istio/main/roles/add_secondary_nginx_ingress/templates/nginx-ingress-service-primary-and-secondary.yaml.j2
+
+# edit file
+# replace first 'loadBalancerIP' value with first MetalLB IP. 
+# Note I left the loadBalancerIP field blank!!! I could not get it to run when I manually specified an IP address.
+# replace second 'loadBalancerIP' value with second MetalLB IP
+vi nginx-ingress-service-primary-and-secondary.yaml.j2
+
+# apply to cluster
+microk8s kubectl apply -f nginx-ingress-service-primary-and-secondary.yaml.j2
+
+# shows 'ingress' and 'ingress-secondary' Services
+# both ClusterIP as well as MetalLB IP addresses
+microk8s kubectl get services --namespace ingress
+
+Deploy test Services
+To facilitate testing, we will deploy two independent Service+Deployment.
+
+Service=golang-hello-world-web-service, Deployment=golang-hello-world-web
+Service=golang-hello-world-web-service2, Deployment=golang-hello-world-web2
+These both use the same image fabianlee/docker-golang-hello-world-web:1.0.0, however they are completely independent deployments and pods.
+
+# get definition of first service/deployment
+wget https://raw.githubusercontent.com/fabianlee/microk8s-nginx-istio/main/roles/golang-hello-world-web/templates/golang-hello-world-web.yaml.j2
+
+# apply first one
+microk8s kubectl apply -f golang-hello-world-web.yaml.j2
+
+# get definition of second service/deployment
+wget https://raw.githubusercontent.com/fabianlee/microk8s-nginx-istio/main/roles/golang-hello-world-web/templates/golang-hello-world-web2.yaml.j2
+
+# apply second one
+microk8s kubectl apply -f golang-hello-world-web2.yaml.j2
+
+# show both deployments and then pods
+microk8s kubectl get deployments
+microk8s kubectl get pods
+
+
+These apps are now available at their internal pod IP address.
+
+# check ClusterIP and port of first and second service
+microk8s kubectl get services
+
+# internal ip of primary pod
+export primaryPodIP=$(microk8s kubectl get pods -l app=golang-hello-world-web -o=jsonpath="{.items[0].status.podIPs[0].ip}")
+
+# internal IP of secondary pod
+export secondaryPodIP=$(microk8s kubectl get pods -l app=golang-hello-world-web2 -o=jsonpath="{.items[0].status.podIPs[0].ip}")
+
+# check pod using internal IP
+curl http://${primaryPodIP}:8080/myhello/
+
+# check pod using internal IP
+curl http://${secondaryPodIP}:8080/myhello2/
+
+
+With internal pod IP proven out, move up to the IP at the  Service level.
+
+# IP of primary service
+export primaryServiceIP=$(microk8s kubectl get service/golang-hello-world-web-service -o=jsonpath="{.spec.clusterIP}")
+
+# IP of secondary service
+export secondaryServiceIP=$(microk8s kubectl get service/golang-hello-world-web-service2 -o=jsonpath="{.spec.clusterIP}")
+
+# check primary service
+curl http://${primaryServiceIP}:8080/myhello/
+
+# check secondary service
+curl http://${secondaryServiceIP}:8080/myhello2/
+
+These validations proved out the pod and service independent of the NGINX ingress controller.  Notice all these were using insecure HTTP on port 8080, because the Ingress controller step in the following step is where TLS is layered on.
+
+
+
 
 Setting up a MetalLB/Ingress service
 For load balancing in a MicroK8s cluster, MetalLB can make use of Ingress to properly balance across the cluster ( make sure you have also enabled ingress in MicroK8s first, with microk8s enable ingress). To do this, it requires a service. A suitable ingress service is defined here:

@@ -1,5 +1,13 @@
 https://kubernetes.io/docs/tasks/configmap-secret/managing-secret-using-kubectl/
-
+username:mg.odbcalbion, Plex odbc connection
+username2:mgadmin, Azure DW
+username3: mysql, root 
+username4: MGEdonReportsws@plex.com, Plex soap webservice
+username5: MGAlabamaReportsws@plex.com
+username6: MGAlbionReportsws@plex.com
+username7:MGAvillaReportsws@plex.com
+username8:MGAFPReportsws@plex.com
+username9:MGTechReportws@plex.com
 Create a Secret
 A Secret can contain user credentials required by pods to access a database. For example, a database connection string consists of a username and password. You can store the username in a file ./username.txt and the password in a file ./password.txt on your local machine.
 
@@ -7,7 +15,7 @@ A Secret can contain user credentials required by pods to access a database. For
     # password = 'wrong' 
     password = 'Mob3xalbion' 
 
-This seemed to work best.
+This seemed to work best. Can use nvim but not visual studio code.
 echo "mg.odbcalbion" > ./username.txt
 echo "Mob3xalbion" > ./password.txt
 echo "mgadmin" > ./username2.txt
@@ -25,6 +33,10 @@ In these commands, the -n flag ensures that the generated files do not have an e
 
 The kubectl create secret command packages these files into a Secret and creates the object on the API server.
 
+kubectl get secret db-user-pass -o jsonpath='{.data}'
+
+kubectl delete secret db-user-pass
+
 kubectl create secret generic db-user-pass \
   --from-file=username=./username.txt \
   --from-file=password=./password.txt \
@@ -33,7 +45,24 @@ kubectl create secret generic db-user-pass \
   --from-file=username3=./username3.txt \
   --from-file=password3=./password3.txt \
   --from-file=username4=./username4.txt \
-  --from-file=password4=./password4.txt
+  --from-file=password4=./password4.txt \
+  --from-file=username5=./username5.txt \
+  --from-file=password5=./password5.txt \
+  --from-file=username6=./username6.txt \
+  --from-file=password6=./password6.txt \
+  --from-file=username7=./username7.txt \
+  --from-file=password7=./password7.txt \
+  --from-file=username8=./username8.txt \
+  --from-file=password8=./password8.txt \
+  --from-file=username9=./username9.txt \
+  --from-file=password9=./password9.txt \
+
+
+kubectl get secret db-user-pass -o jsonpath='{.data}'
+kubectl get secret db-user-pass -o jsonpath='{.data.password}' | base64 --decode
+
+kubectl delete secret db-user-pass
+
 
 kubectl create secret generic db-user-pass \
   --from-literal=username='mg.odbcalbion' \
