@@ -55,7 +55,7 @@ kubectl create secret generic db-user-pass \
   --from-file=username8=./username8.txt \
   --from-file=password8=./password8.txt \
   --from-file=username9=./username9.txt \
-  --from-file=password9=./password9.txt \
+  --from-file=password9=./password9.txt
 
 
 kubectl get secret db-user-pass -o jsonpath='{.data}'
