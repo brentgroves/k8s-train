@@ -1,19 +1,4 @@
-https://blog.container-solutions.com/kubernetes-deployment-strategies
-https://blog.container-solutions.com/kubernetes-deployment-strategies
-
-Recreate - best for development environment
-A deployment defined with a strategy of type Recreate will terminate all the running instances then recreate them with the newer version.
-
- 
-spec:
-  replicas: 3
-  strategy:
-    type: Recreate
-	
-  
-kubectl apply --validate -f deployment.yaml
-
-https://kubernetes.io/docs/concepts/workloads/controllers/deployment/
+kubectl get pods -l app=web-application -o=jsonpath="{.items[0].status.podIPs[0].ip}"
 
 apiVersion: apps/v1
 kind: Deployment
@@ -26,7 +11,7 @@ spec:
   selector:
     matchLabels:
       app: nginx
-  template: #pod template
+  template:
     metadata:
       labels:
         app: nginx

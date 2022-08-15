@@ -5,13 +5,13 @@
 			"path": "."
 		},
 		{
-			"name": "UDPServer",
-			"path": "../UDPServer"
+			"path": "../../srcpy/python-train"
 		},
 		{
-			"name": "UDPClient",
-			"path": "../UDPClient"
+			"path": "../ETL-Pod"
 		}
 	],
-	"settings": {}
+	"settings": {
+		"powershell.cwd": "/home/bgroves@BUSCHE-CNC.COM/srcdocker/k8s-train"
+	}
 }

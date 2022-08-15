@@ -132,16 +132,22 @@ While kubectl does fetch any remote manifest URL provided, I like to download th
 
 
 Create Ingress Services
-Then you need to create two Services, one for the primary ingress using the first MetalLB IP address and another for the secondary using the second MetalLB IP address.
+Then you need to create two Services, one for the primary ingress using the first MetalLB IP address and another for the secondary using the second MetalLB IP address. I could not choose the exact MetalLB IP address for the service but microK8s choose one for both services.
 
-Download the nginx-ingress-service-primary-and-secondary.yaml.j2 template, and do a couple of replacements before applying with kubectl.
+Download the nginx-ingress-service-primary-and-secondary.yaml.j2 template, and do a couple of replacements before applying with kubectl. 
+I just removed the IP address because I could not get this to work if I manually specified the IP addresses.
 
 # download template
 wget https://raw.githubusercontent.com/fabianlee/microk8s-nginx-istio/main/roles/add_secondary_nginx_ingress/templates/nginx-ingress-service-primary-and-secondary.yaml.j2
 
 # edit file
+# Note I left the loadBalancerIP field blank!!! I could not get it to run when I manually specified an IP address.
 # replace first 'loadBalancerIP' value with first MetalLB IP. 
 # Note I left the loadBalancerIP field blank!!! I could not get it to run when I manually specified an IP address.
+# loadBalancerIP is optional. MetalLB will automatically allocate an IP 
+# from its pool if not specified. You can also specify one manually.
+# loadBalancerIP: "{{ additional_nic[0].netplan.addresses[0] | ipaddr('address') }}"
+
 # replace second 'loadBalancerIP' value with second MetalLB IP
 vi nginx-ingress-service-primary-and-secondary.yaml.j2
 
@@ -211,12 +217,6 @@ curl http://${secondaryServiceIP}:8080/myhello2/
 These validations proved out the pod and service independent of the NGINX ingress controller.  Notice all these were using insecure HTTP on port 8080, because the Ingress controller step in the following step is where TLS is layered on.
 
 
-
-
-Setting up a MetalLB/Ingress service
-For load balancing in a MicroK8s cluster, MetalLB can make use of Ingress to properly balance across the cluster ( make sure you have also enabled ingress in MicroK8s first, with microk8s enable ingress). To do this, it requires a service. A suitable ingress service is defined here:
-microk8s kubectl apply -f ingress-service.yaml
-
 apiVersion: v1
 kind: Service
 metadata:
@@ -228,6 +228,7 @@ spec:
   type: LoadBalancer
   # loadBalancerIP is optional. MetalLB will automatically allocate an IP 
   # from its pool if not specified. You can also specify one manually.
+  # I could not get this service to run when I manually specified an IP address.
   # loadBalancerIP: 172.20.88.16
   ports:
     - name: http
