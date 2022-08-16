@@ -1,5 +1,12 @@
 kubectl get pods -l app=web-application -o=jsonpath="{.items[0].status.podIPs[0].ip}"
 
+# internal ip of primary pod
+primaryPodIP=$(microk8s kubectl get pods -l app=golang-hello-world-web -o=jsonpath="{.items[0].status.podIPs[0].ip}")
+
+# IP of primary service
+primaryServiceIP=$(microk8s kubectl get service/golang-hello-world-web-service -o=jsonpath="{.spec.clusterIP}")
+
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:

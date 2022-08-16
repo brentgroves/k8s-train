@@ -51,12 +51,15 @@ curl http://${primaryPodIP}:5000/hotel -H 'Content-Type: application/json' -d '{
 curl -X POST http://10.1.210.65:5000/hotel -H 'Content-Type: application/json' -d '{"id":"1","name":"name1","state":"state1","rooms":"1"}'
 curl -X POST http://10.1.210.65:5000/hotel -H 'Content-Type: application/json' -d '{"id":"2","name":"name2","state":"state1","rooms":"2"}'
 curl http://10.1.210.65:5000/hotel
+curl https://microk8s.local/hotel
+curl -k https://microk8s.local/hotel
+
 
 kubectl get services
 # IP of primary service
 export primaryServiceIP=$(kubectl get service/web-application-service -o=jsonpath="{.spec.clusterIP}")
 # check primary service
-curl http://${primaryServiceIP}:5000/hotel/
+curl http://${primaryServiceIP}:5000/hotel
 
 Next use the service ip address in the curl command except with the port mapping 80.
 curl -X POST http://10.152.183.234:5000/hotel -H 'Content-Type: application/json' -d '{"id":"3","name":"name3","state":"state3","rooms":"3"}'
@@ -65,9 +68,74 @@ curl http://10.152.183.234:5000/hotel
 
 These validations proved out the pod and service independent of the NGINX ingress controller.  Notice all these were using insecure HTTP on port 8080, because the Ingress controller step in the following step is where TLS is layered on.
 
+# IP of primary service
+primaryServiceIP=$(microk8s kubectl get service/golang-hello-world-web-service -o=jsonpath="{.spec.clusterIP}")
+
+Create TLS key and certificate
+Before we expose these services via Ingress, we must create the TLS keys and certificates that will be used when serving traffic.
+
+Primary ingress will use TLS with CN=microk8s.local
+Secondary ingress will use TLS with CN=microk8s-secondary.local
+The best way to do this is with either a commercial certificate, or creating your own custom CA and SAN certificates.  But this article is striving for simplicity, so we will simply generate self-signed certificates using a simple script I wrote.
+
+# download and change script to executable
+wget https://raw.githubusercontent.com/fabianlee/microk8s-nginx-istio/main/roles/cert-with-ca/files/microk8s-self-signed.sh
+
+chmod +x microk8s-self-signed.sh
+
+# run openssl commands that generate our key + certs in /tmp
+./microk8s-self-signed.sh
+
+# change permissions so they can be read by normal user
+sudo chmod go+r /tmp/*.{key,crt}
+
+# show key and certs created
+ls -l /tmp/microk8s*
 
 
+# create primary tls secret for 'microk8s.local'
+microk8s kubectl create -n default secret tls tls-credential --key=/tmp/microk8s.local.key --cert=/tmp/microk8s.local.crt
 
+# create secondary tls secret for 'microk8s-secondary.local'
+microk8s kubectl create -n default secret tls tls-secondary-credential --key=/tmp/microk8s-secondary.local.key --cert=/tmp/microk8s-secondary.local.crt
+
+# shows both tls secrets
+microk8s kubectl get secrets --namespace default
+
+
+# create primary ingress
+
+kubectl apply -f web-application-ingress.yaml
+
+# show primary and secondary Ingress objects
+# primary available at 'microk8s.local'
+kubectl get ingress --namespace default
+
+
+# shows primary and secondary ingress objects tied to MetalLB IP
+microk8s kubectl get services --namespace ingress
+
+NAME                TYPE           CLUSTER-IP       EXTERNAL-IP    PORT(S)                      AGE
+ingress             LoadBalancer   10.152.183.28    172.20.88.16   80:30191/TCP,443:31891/TCP   93d
+ingress-secondary   LoadBalancer   10.152.183.131   172.20.1.190   80:31139/TCP,443:31697/TCP   93d
+
+
+Validate URL endpoints
+The Ingress requires that the proper FQDN headers be sent by your browser, so it is not sufficient to do a GET against the MetalLB IP addresses.  You have two options:
+
+add the ‘microk8s.local’ and ‘microk8s-secondary.local’ entries to your local /etc/hosts file
+OR use the curl ‘–resolve’ flag to specify the FQDN to IP mapping which will send the host header correctly
+Here is an example of pulling from the primary and secondary Ingress using entries in the /etc/hosts file.
+
+# validate you have entries to 192.168.1.141 and .142
+grep microk8s /etc/hosts
+
+# check primary ingress
+curl -k https://microk8s.local/hotel/
+curl -k https://microk8s.local/myhello/
+
+# check secondary ingress
+curl -k https://microk8s-secondary.local/myhello2/
 
 Trouble-shooting:
 kubectl exec --stdin --tty web-application-6f5578748f-zl67w  -- /bin/bash

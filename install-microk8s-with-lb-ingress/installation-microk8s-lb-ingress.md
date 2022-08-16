@@ -74,6 +74,11 @@ token=$(microk8s kubectl -n kube-system get secret | grep default-token | cut -d
 microk8s kubectl -n kube-system describe secret $token
 Role-based access control (RBAC) restricts network access based on a person's role within an organization and has become one of the main methods ...
 
+Network traffic Path
+MetalLB load balancer IP range
+Ingress controller service devoted to load balancing.
+1 of the 3 Ingress Nginx primary or secondary ingress controller pods 
+
 
 Configure networking.
 https://fabianlee.org/2021/07/29/kubernetes-microk8s-with-multiple-metallb-endpoints-and-nginx-ingress-controllers/
@@ -158,20 +163,22 @@ microk8s kubectl apply -f nginx-ingress-service-primary-and-secondary.yaml.j2
 # both ClusterIP as well as MetalLB IP addresses
 microk8s kubectl get services --namespace ingress
 
-Deploy test Services
+Deployment and Services
 To facilitate testing, we will deploy two independent Service+Deployment.
 
 Service=golang-hello-world-web-service, Deployment=golang-hello-world-web
 Service=golang-hello-world-web-service2, Deployment=golang-hello-world-web2
 These both use the same image fabianlee/docker-golang-hello-world-web:1.0.0, however they are completely independent deployments and pods.
 
-# get definition of first service/deployment
+
+
+# get definition of first ingress
 wget https://raw.githubusercontent.com/fabianlee/microk8s-nginx-istio/main/roles/golang-hello-world-web/templates/golang-hello-world-web.yaml.j2
 
 # apply first one
 microk8s kubectl apply -f golang-hello-world-web.yaml.j2
 
-# get definition of second service/deployment
+# get definition of second ingress
 wget https://raw.githubusercontent.com/fabianlee/microk8s-nginx-istio/main/roles/golang-hello-world-web/templates/golang-hello-world-web2.yaml.j2
 
 # apply second one
@@ -216,6 +223,75 @@ curl http://${secondaryServiceIP}:8080/myhello2/
 
 These validations proved out the pod and service independent of the NGINX ingress controller.  Notice all these were using insecure HTTP on port 8080, because the Ingress controller step in the following step is where TLS is layered on.
 
+Create TLS key and certificate
+Before we expose these services via Ingress, we must create the TLS keys and certificates that will be used when serving traffic.
+
+Primary ingress will use TLS with CN=microk8s.local
+Secondary ingress will use TLS with CN=microk8s-secondary.local
+The best way to do this is with either a commercial certificate, or creating your own custom CA and SAN certificates.  But this article is striving for simplicity, so we will simply generate self-signed certificates using a simple script I wrote.
+
+# download and change script to executable
+wget https://raw.githubusercontent.com/fabianlee/microk8s-nginx-istio/main/roles/cert-with-ca/files/microk8s-self-signed.sh
+
+chmod +x microk8s-self-signed.sh
+
+# run openssl commands that generate our key + certs in /tmp
+./microk8s-self-signed.sh
+
+# change permissions so they can be read by normal user
+sudo chmod go+r /tmp/*.{key,crt}
+
+# show key and certs created
+ls -l /tmp/microk8s*
+
+
+# create primary tls secret for 'microk8s.local'
+microk8s kubectl create -n default secret tls tls-credential --key=/tmp/microk8s.local.key --cert=/tmp/microk8s.local.crt
+
+# create secondary tls secret for 'microk8s-secondary.local'
+microk8s kubectl create -n default secret tls tls-secondary-credential --key=/tmp/microk8s-secondary.local.key --cert=/tmp/microk8s-secondary.local.crt
+
+# shows both tls secrets
+microk8s kubectl get secrets --namespace default
+
+
+
+Deploy via Ingress
+Finally, to make these services available to the outside world, we need to expose them via the NGINX Ingress and MetalLB addresses.
+NGINX = engineX
+# create primary ingress
+wget https://raw.githubusercontent.com/fabianlee/microk8s-nginx-istio/main/roles/golang-hello-world-web/templates/golang-hello-world-web-on-nginx.yaml.j2
+
+microk8s kubectl apply -f golang-hello-world-web-on-nginx.yaml.j2
+
+# create secondary ingress 
+wget https://raw.githubusercontent.com/fabianlee/microk8s-nginx-istio/main/roles/golang-hello-world-web/templates/golang-hello-world-web-on-nginx2.yaml.j2 
+
+microk8s kubectl apply -f golang-hello-world-web-on-nginx2.yaml.j2
+
+# show primary and secondary Ingress objects
+# primary available at 'microk8s.local'
+# secondary available at 'microk8s-secondary.local'
+microk8s kubectl get ingress --namespace default
+
+# shows primary and secondary ingress objects tied to MetalLB IP
+microk8s kubectl get services --namespace ingress
+
+Validate URL endpoints
+The Ingress requires that the proper FQDN headers be sent by your browser, so it is not sufficient to do a GET against the MetalLB IP addresses.  You have two options:
+
+add the ‘microk8s.local’ and ‘microk8s-secondary.local’ entries to your local /etc/hosts file
+OR use the curl ‘–resolve’ flag to specify the FQDN to IP mapping which will send the host header correctly
+Here is an example of pulling from the primary and secondary Ingress using entries in the /etc/hosts file.
+
+# validate you have entries to 192.168.1.141 and .142
+grep microk8s /etc/hosts
+
+# check primary ingress
+curl -k https://microk8s.local/myhello/
+
+# check secondary ingress
+curl -k https://microk8s-secondary.local/myhello2/
 
 apiVersion: v1
 kind: Service
