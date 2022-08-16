@@ -9,6 +9,9 @@
 		},
 		{
 			"path": "../ETL-Pod"
+		},
+		{
+			"path": "../../src/linux-utils"
 		}
 	],
 	"settings": {

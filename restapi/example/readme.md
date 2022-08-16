@@ -103,13 +103,15 @@ microk8s kubectl create -n default secret tls tls-secondary-credential --key=/tm
 microk8s kubectl get secrets --namespace default
 
 
-# create primary ingress
-
+# create secured ingress
 kubectl apply -f web-application-ingress.yaml
 
 # show primary and secondary Ingress objects
 # primary available at 'microk8s.local'
 kubectl get ingress --namespace default
+
+# create unsecured ingress
+kubectl apply -f web-application-ingress-unsecure.yaml
 
 
 # shows primary and secondary ingress objects tied to MetalLB IP
@@ -130,12 +132,18 @@ Here is an example of pulling from the primary and secondary Ingress using entri
 # validate you have entries to 192.168.1.141 and .142
 grep microk8s /etc/hosts
 
-# check primary ingress
-curl -k https://microk8s.local/hotel/
-curl -k https://microk8s.local/myhello/
+# check secured ingress
+-k means that curl wont verify TLS certificate with the host that 
+issued it.
 
-# check secondary ingress
-curl -k https://microk8s-secondary.local/myhello2/
+curl -k https://microk8s.local/hotel
+curl -k -X POST https://microk8s.local/hotel -H 'Content-Type: application/json' -d '{"id":"4","name":"name4","state":"state4","rooms":"4"}'
+
+
+# check unsecure ingress
+curl http://172.20.88.16/hotel
+curl -X POST http://172.20.88.16/hotel -H 'Content-Type: application/json' -d '{"id":"5","name":"name5","state":"state5","rooms":"5"}'
+
 
 Trouble-shooting:
 kubectl exec --stdin --tty web-application-6f5578748f-zl67w  -- /bin/bash
