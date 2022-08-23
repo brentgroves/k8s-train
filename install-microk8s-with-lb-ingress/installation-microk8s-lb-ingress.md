@@ -22,6 +22,7 @@ reports11: 10.1.0.114 - Ask Jared if if is ok to use this.
 I hope it is ok with you Father to use Holly's old computer.
 frt-ubu = 172.20.1.190
 avi-ubu = 172.20.88.16
+Jared said it was ok to use:110-113
 
 sudo hostnamectl set-hostname reports01
 
