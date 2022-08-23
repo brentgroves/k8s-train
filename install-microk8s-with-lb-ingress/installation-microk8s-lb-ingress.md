@@ -2,10 +2,28 @@ IP Address
 reports1 = 10.1.0.116
 reports2 = 10.1.0.117
 reports3 = 10.1.0.118
+
+ip-range 10.1.0.116-118,10.1.0.120
+netmask:255.255.252.0
+dns: 10.1.2.69, 10.1.2.70, 172.10.0.39, 10.30.1.27
+gw:10.1.1.205
+dev1: 10.1.0.125 - vm from develop-template -hostname is reports - dist upgrade to ubuntu 22.04 
+Remember to update dev1 mssql-release.list to 21.04 repo
+mcp1: 10.1.0.121 - 22.04 fresh install
+reports3: 10.1.0.118 - made a mysql backup to 10.1.1.83 ~/backups/db/
+cluster1
+reports01: 10.1.0.116 - change to 10.1.0.116 Thank you Abba for this work.
+reports02: 10.1.0.117
+reports03: 10.1.0.118
+cluster2
 moto = 10.1.1.83
+reports10: 10.1.0.120 - Ask Jared if it is ok to use this
+reports11: 10.1.0.114 - Ask Jared if if is ok to use this.
+I hope it is ok with you Father to use Holly's old computer.
 frt-ubu = 172.20.1.190
 avi-ubu = 172.20.88.16
-sudo hostnamectl set-hostname reports1
+
+sudo hostnamectl set-hostname reports01
 
 https://zero-to-jupyterhub.readthedocs.io/en/latest/
 sudo snap remove microk8s
