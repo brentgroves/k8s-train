@@ -147,7 +147,7 @@ To create a secondary ingress, we must go beyond using the microk8s â€˜ingressâ€
 wget https://raw.githubusercontent.com/fabianlee/microk8s-nginx-istio/main/roles/add_secondary_ingress/templates/nginx-ingress-secondary-microk8s-controller.yaml.j2
 
 kubectl apply -f nginx-ingress-secondary-microk8s-controller.yaml.j2
-
+START HERE JUST DEPLOYED THE CONTROLLER.
 # you should now see both:
 # 'nginx-ingress-microk8s-controller' and 
 # 'nginx-ingress-private-microk8s-controller'
