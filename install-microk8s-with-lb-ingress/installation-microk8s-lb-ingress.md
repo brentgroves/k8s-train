@@ -17,8 +17,9 @@ reports02: 10.1.0.117
 reports03: 10.1.0.118
 cluster2
 moto = 10.1.1.83
-reports10: 10.1.0.120 - Ask Jared if it is ok to use this
-reports11: 10.1.0.114 - Ask Jared if if is ok to use this.
+reports11: 10.1.0.110 
+reports12: 10.1.0.111 
+make a reports13 and use 10.1.0.112 from a dell 9020 if Abba provides.
 I hope it is ok with you Father to use Holly's old computer.
 frt-ubu = 172.20.1.190
 avi-ubu = 172.20.88.16
@@ -41,6 +42,9 @@ https://microk8s.io/#install-microk8s
 sudo snap install microk8s --classic --channel=1.21
 sudo usermod -a -G microk8s $USER
 sudo chown -f -R $USER ~/.kube
+
+I believe this is in the dotfiles
+alias kubectl='microk8s kubectl'
 
 
 microk8s will continue to run until you stop it.
@@ -68,7 +72,7 @@ microk8s kubectl get services
 
 MicroK8s uses a namespaced kubectl command to prevent conflicts with any existing installs of kubectl. If you don’t have an existing install, it is easier to add an alias (append to ~/.bash_aliases) like this:
 
-alias kubectl='microk8s kubectl'
+
 
 Verify nodes have been added
 kubectl get node -o wide
@@ -77,11 +81,13 @@ Enable the necessary MicroK8s Add ons:
 Doing this on each node in cluster does not seem to be necessary for dns. I ran this command on AVI-UBU 
 and the other nodes showed the dns add-ons as enabled. 
 microk8s enable dns 
-Enable this on each node.
+
+I don't think it is necessary to enable helm3 on each node, I did and it did not hurt.
+Try enabling on 1 node only and then run microk8s status from another node to see if it is enabled 
 microk8s enable helm3
+
 This only has to be done on one node. I ran it on the master node.
 This addon adds an NGINX Ingress Controller for MicroK8s. It is enabled by running the command:
-Enable primary ingress
 https://microk8s.io/docs/addon-ingress
 # enables primary NGINX ingress controller
 $ microk8s enable ingress
@@ -93,11 +99,6 @@ token=$(microk8s kubectl -n kube-system get secret | grep default-token | cut -d
 microk8s kubectl -n kube-system describe secret $token
 Role-based access control (RBAC) restricts network access based on a person's role within an organization and has become one of the main methods ...
 
-Network traffic Path
-MetalLB load balancer IP range
-Ingress controller service devoted to load balancing.
-1 of the 3 Ingress Nginx primary or secondary ingress controller pods 
-
 
 Configure networking.
 https://fabianlee.org/2021/07/29/kubernetes-microk8s-with-multiple-metallb-endpoints-and-nginx-ingress-controllers/
@@ -107,9 +108,8 @@ Setting up a MetalLB/Ingress service
 For load balancing in a MicroK8s cluster, MetalLB can make use of Ingress to properly balance across the cluster ( make sure you have also enabled ingress in MicroK8s first, with microk8s enable ingress). To do this, it requires a service. A suitable ingress service is defined here:
 
 The MetalB is lv 4 and the ingress is lv 7 of the osi model
-so the traffic is first seen by the metalb loadbalance which then sends it to one of the ingress controllers to decide which pod to 
+so the traffic is first seen by the metalb loadbalance which then sends it to one of the ingress controllers through the service you define to decide which pod to 
 send it to using an ingress object.
-
 
 DO THIS FIRST BEFORE ENABLING METALB
 This only has to be done on one node. I ran it on the master node.
