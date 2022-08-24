@@ -135,7 +135,7 @@ $ sleep 15
 $ microk8s status --wait-ready | head -n8
 
 # view MetalLB objects
-$ microk8s kubectl get all -n metallb-system
+$ kubectl get all -n metallb-system
 
 # show MetalLB configmap with IP used
 microk8s kubectl get configmap/config -n metallb-system -o yaml
@@ -146,7 +146,7 @@ To create a secondary ingress, we must go beyond using the microk8s â€˜ingressâ€
 # apply DaemonSet that creates secondary ingress
 wget https://raw.githubusercontent.com/fabianlee/microk8s-nginx-istio/main/roles/add_secondary_ingress/templates/nginx-ingress-secondary-microk8s-controller.yaml.j2
 
-microk8s kubectl apply -f nginx-ingress-secondary-microk8s-controller.yaml.j2
+kubectl apply -f nginx-ingress-secondary-microk8s-controller.yaml.j2
 
 # you should now see both:
 # 'nginx-ingress-microk8s-controller' and 
