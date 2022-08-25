@@ -98,6 +98,8 @@ mysql -h 10.1.1.83 -P 31008 -u root -ppassword
 
 !!!! error on reports kubectl run -it --rm --image=mysql:5.6 --restart=Never mysql-client -- mysql -h mysql -ppassword
 getting reports2 name lookup failure using this command.
+I added reports03 to the /etc/hostname table and it worked.
+Thank you Father;
 
 
 https://docs.pivotal.io/tanzu-mysql-kubernetes/1-0/accessing.html

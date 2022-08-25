@@ -19,10 +19,10 @@ export v1=$(/bin/date +\%Y-\%m-\%d)
 mysqldump -u root -p -h 10.1.0.118 --port=31008 --column-statistics=0 --add-drop-table --routines --all-databases > /home/brent/backups/db/$(/bin/date +\%Y-\%m-\%d-\%R:\%S).sql.bak
 
 # restore all the test database
-mysql -u root -p -h 10.1.0.118 --port=31008 < ~/backups/db/2022-07-20-18:41:40.sql.bak
+mysql -u root -p -h 10.1.0.118 --port=31008 < ~/backups/db/2022-08-18-16:58:43.sql.bak
 
 # restore just the test database
-mysql -u root -p -h 10.1.0.118 test --port=31008 < ~/backups/db/2022-07-20-18:41:40.sql.bak
+mysql -u root -p -h 10.1.0.118 test --port=31008 < ~/backups/db/2022-08-18-16:58:43.sql.bak
 
 ![](img/vsphere.png)
 
