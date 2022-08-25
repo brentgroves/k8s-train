@@ -59,6 +59,8 @@ https://kubernetes.io/docs/tasks/configure-pod-container/configure-persistent-vo
 # as the superuser
 I don't think you need to make this directory yourself.
 sudo mkdir /mnt/data
+unless you want to initialize the directory with a file such
+index.html.
 
 kubectl apply -f mysql-pv.yaml
 
