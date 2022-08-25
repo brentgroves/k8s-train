@@ -57,6 +57,7 @@ Deploy the PV and PVC of the YAML file:
 https://kubernetes.io/docs/tasks/configure-pod-container/configure-persistent-volume-storage/
 # This assumes that your Node uses "sudo" to run commands
 # as the superuser
+I don't think you need to make this directory yourself.
 sudo mkdir /mnt/data
 
 kubectl apply -f mysql-pv.yaml

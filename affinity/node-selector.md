@@ -9,7 +9,6 @@ spec:
   storageClassName: manual
   capacity:
     storage: 20Gi
-  # an access mode of ReadWriteOnce, which means the volume can be mounted as read-write by a single Node.
   accessModes:
     - ReadWriteOnce
   hostPath:
@@ -17,7 +16,6 @@ spec:
 # https://stackoverflow.com/questions/60247100/hostpath-assign-persistentvolume-to-the-specific-work-node-in-cluster
 # Don't need a persistent volume claim since this is a simple hostpath
 # which can be set in the deployment
-# https://kubernetes.io/blog/2017/03/advanced-scheduling-in-kubernetes/
   nodeAffinity:
     required:
       nodeSelectorTerms:
@@ -38,4 +36,3 @@ spec:
   resources:
     requests:
       storage: 20Gi
-      
