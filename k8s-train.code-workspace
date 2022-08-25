@@ -8,10 +8,10 @@
 			"path": "../../srcpy/python-train"
 		},
 		{
-			"path": "../ETL-Pod"
+			"path": "../../src/linux-utils"
 		},
 		{
-			"path": "../../src/linux-utils"
+			"path": "../ETL-Pod"
 		}
 	],
 	"settings": {

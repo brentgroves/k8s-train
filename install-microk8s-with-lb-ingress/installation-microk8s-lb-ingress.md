@@ -151,7 +151,7 @@ START HERE JUST DEPLOYED THE CONTROLLER.
 # you should now see both:
 # 'nginx-ingress-microk8s-controller' and 
 # 'nginx-ingress-private-microk8s-controller'
-microk8s kubectl get all --namespace ingress
+kubectl get all --namespace ingress
 While kubectl does fetch any remote manifest URL provided, I like to download these manifest so they can be referenced later or changed if necessary.
 
 
@@ -173,14 +173,14 @@ wget https://raw.githubusercontent.com/fabianlee/microk8s-nginx-istio/main/roles
 # loadBalancerIP: "{{ additional_nic[0].netplan.addresses[0] | ipaddr('address') }}"
 
 # replace second 'loadBalancerIP' value with second MetalLB IP
-vi nginx-ingress-service-primary-and-secondary.yaml.j2
+nvim nginx-ingress-service-primary-and-secondary.yaml.j2
 
 # apply to cluster
-microk8s kubectl apply -f nginx-ingress-service-primary-and-secondary.yaml.j2
+kubectl apply -f nginx-ingress-service-primary-and-secondary.yaml.j2
 
 # shows 'ingress' and 'ingress-secondary' Services
 # both ClusterIP as well as MetalLB IP addresses
-microk8s kubectl get services --namespace ingress
+kubectl get services --namespace ingress
 
 Deployment and Services
 To facilitate testing, we will deploy two independent Service+Deployment.
@@ -189,29 +189,29 @@ Service=golang-hello-world-web-service, Deployment=golang-hello-world-web
 Service=golang-hello-world-web-service2, Deployment=golang-hello-world-web2
 These both use the same image fabianlee/docker-golang-hello-world-web:1.0.0, however they are completely independent deployments and pods.
 
-
-
-# get definition of first ingress
+# get definition of first deployment
 wget https://raw.githubusercontent.com/fabianlee/microk8s-nginx-istio/main/roles/golang-hello-world-web/templates/golang-hello-world-web.yaml.j2
 
 # apply first one
-microk8s kubectl apply -f golang-hello-world-web.yaml.j2
+nvim golang-hello-world-web.yaml.j2
+kubectl apply -f golang-hello-world-web.yaml.j2
 
-# get definition of second ingress
+# get definition of second deployment
 wget https://raw.githubusercontent.com/fabianlee/microk8s-nginx-istio/main/roles/golang-hello-world-web/templates/golang-hello-world-web2.yaml.j2
 
 # apply second one
-microk8s kubectl apply -f golang-hello-world-web2.yaml.j2
+kubectl apply -f golang-hello-world-web2.yaml.j2
 
 # show both deployments and then pods
-microk8s kubectl get deployments
-microk8s kubectl get pods
+kubectl get deployments 
+kubectl get pods -o wide
+kubectl get services 
 
 
 These apps are now available at their internal pod IP address.
 
 # check ClusterIP and port of first and second service
-microk8s kubectl get services
+kubectl get services
 
 # internal ip of primary pod
 export primaryPodIP=$(microk8s kubectl get pods -l app=golang-hello-world-web -o=jsonpath="{.items[0].status.podIPs[0].ip}")
@@ -220,7 +220,9 @@ export primaryPodIP=$(microk8s kubectl get pods -l app=golang-hello-world-web -o
 export secondaryPodIP=$(microk8s kubectl get pods -l app=golang-hello-world-web2 -o=jsonpath="{.items[0].status.podIPs[0].ip}")
 
 # check pod using internal IP
+curl http://${primaryPodIP}:8080/healthz/  -- 404 not founc
 curl http://${primaryPodIP}:8080/myhello/
+
 
 # check pod using internal IP
 curl http://${secondaryPodIP}:8080/myhello2/
@@ -265,10 +267,10 @@ ls -l /tmp/microk8s*
 
 
 # create primary tls secret for 'microk8s.local'
-microk8s kubectl create -n default secret tls tls-credential --key=/tmp/microk8s.local.key --cert=/tmp/microk8s.local.crt
+kubectl create -n default secret tls tls-credential --key=/tmp/microk8s.local.key --cert=/tmp/microk8s.local.crt
 
 # create secondary tls secret for 'microk8s-secondary.local'
-microk8s kubectl create -n default secret tls tls-secondary-credential --key=/tmp/microk8s-secondary.local.key --cert=/tmp/microk8s-secondary.local.crt
+kubectl create -n default secret tls tls-secondary-credential --key=/tmp/microk8s-secondary.local.key --cert=/tmp/microk8s-secondary.local.crt
 
 # shows both tls secrets
 microk8s kubectl get secrets --namespace default

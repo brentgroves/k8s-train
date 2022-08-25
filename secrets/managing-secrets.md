@@ -8,6 +8,8 @@ username6: MGAlbionReportsws@plex.com
 username7:MGAvillaReportsws@plex.com
 username8:MGAFPReportsws@plex.com
 username9:MGTechReportws@plex.com
+username10:MGSouthReportWs@plex.com
+password10:cfdf135-564a-
 Create a Secret
 A Secret can contain user credentials required by pods to access a database. For example, a database connection string consists of a username and password. You can store the username in a file ./username.txt and the password in a file ./password.txt on your local machine.
 
