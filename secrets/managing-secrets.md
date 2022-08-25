@@ -10,6 +10,8 @@ username8:MGAFPReportsws@plex.com
 username9:MGTechReportws@plex.com
 username10:MGSouthReportWs@plex.com
 password10:cfdf135-564a-
+echo "MGSouthReportWs@plex.com" > ./username10.txt
+echo "cfdf135-564a-" > ./password10.txt
 Create a Secret
 A Secret can contain user credentials required by pods to access a database. For example, a database connection string consists of a username and password. You can store the username in a file ./username.txt and the password in a file ./password.txt on your local machine.
 
@@ -57,7 +59,9 @@ kubectl create secret generic db-user-pass \
   --from-file=username8=./username8.txt \
   --from-file=password8=./password8.txt \
   --from-file=username9=./username9.txt \
-  --from-file=password9=./password9.txt
+  --from-file=password9=./password9.txt \
+  --from-file=username10=./username10.txt \
+  --from-file=password10=./password10.txt 
 
 
 kubectl get secret db-user-pass -o jsonpath='{.data}'
