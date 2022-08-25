@@ -1,3 +1,5 @@
+https://kubernetes.github.io/ingress-nginx/user-guide/tls/
+https://kubernetes.github.io/ingress-nginx/examples/tls-termination/
 https://fabianlee.org/2021/07/29/kubernetes-microk8s-with-multiple-metallb-endpoints-and-nginx-ingress-controllers/
 microk8s kubectl apply -f nginx-ingress-secondary-microk8s-controller.yaml.j2
 microk8s kubectl get all --namespace ingress

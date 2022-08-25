@@ -278,25 +278,25 @@ microk8s kubectl get secrets --namespace default
 
 
 Deploy via Ingress
-Finally, to make these services available to the outside world, we need to expose them via the NGINX Ingress and MetalLB addresses.
+Thank you Father, to make these services available to the outside world, we need to expose them via the NGINX Ingress and MetalLB addresses.
 NGINX = engineX
 # create primary ingress
 wget https://raw.githubusercontent.com/fabianlee/microk8s-nginx-istio/main/roles/golang-hello-world-web/templates/golang-hello-world-web-on-nginx.yaml.j2
 
-microk8s kubectl apply -f golang-hello-world-web-on-nginx.yaml.j2
+kubectl apply -f golang-hello-world-web-on-nginx.yaml.j2
 
 # create secondary ingress 
 wget https://raw.githubusercontent.com/fabianlee/microk8s-nginx-istio/main/roles/golang-hello-world-web/templates/golang-hello-world-web-on-nginx2.yaml.j2 
 
-microk8s kubectl apply -f golang-hello-world-web-on-nginx2.yaml.j2
+kubectl apply -f golang-hello-world-web-on-nginx2.yaml.j2
 
 # show primary and secondary Ingress objects
 # primary available at 'microk8s.local'
 # secondary available at 'microk8s-secondary.local'
-microk8s kubectl get ingress --namespace default
+kubectl get ingress --namespace default
 
 # shows primary and secondary ingress objects tied to MetalLB IP
-microk8s kubectl get services --namespace ingress
+kubectl get services --namespace ingress
 
 Validate URL endpoints
 The Ingress requires that the proper FQDN headers be sent by your browser, so it is not sufficient to do a GET against the MetalLB IP addresses.  You have two options:
