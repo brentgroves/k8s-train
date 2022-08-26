@@ -1,0 +1,14 @@
+10.1.0.116      reports01
+10.1.0.116      mobex.k8s 
+10.1.0.117      reports02
+10.1.0.117      mobex.us.k8s
+10.1.0.118      reports03
+10.1.0.110      reports11
+10.1.0.110      mobex-dev.k8s
+10.1.0.111      reports12
+10.1.0.111      mobex-dev.us.k8s
+10.1.0.112      reports13
+10.1.0.113      reports14
+10.1.1.83       moto
+172.20.1.190    frt-ubu
+172.20.88.16    avi-ubu
