@@ -12,7 +12,7 @@ sudo apt-get install libssl1.1 -y
 
 certs="$1"
 if [ -z "$certs" ]; then
-  certs="microk8s.local microk8s-secondary.local"
+  certs="mobex-dev.k8s mobex-dev.us.k8s"
 fi
 echo "going to create certs: $certs"
 

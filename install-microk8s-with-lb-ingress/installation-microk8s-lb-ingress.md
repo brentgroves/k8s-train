@@ -55,7 +55,7 @@ https://microk8s.io/docs/clustering
 
 microk8s add-node
 microk8s join 172.20.88.16:25000/552672885f4fcf007e153eb1ee425c2d/6bf7e3972626
-microk8s kubectl get no
+kubectl get no
 microk8s status
 
 
@@ -125,10 +125,13 @@ frt-ubu = 172.20.1.190
 avi-ubu = 172.20.88.16
 
 # enable MetalLB to use IP range, then allow settle
-# dev mcp
+# tooling.k8s
 $ microk8s enable metallb:172.20.88.16-172.20.88.16,172.20.1.190-172.20.1.190,10.1.1.83-10.1.1.83
-# prod mcp
+# mobex.k8s
 $ microk8s enable metallb:10.1.0.116-10.1.0.116,10.1.0.117-10.1.0.117,10.1.0.118-10.1.0.118
+$ sleep 15
+# mobex-dev.k8s
+$ microk8s enable metallb:10.1.0.110-10.1.0.110,10.1.0.111-10.1.0.111,10.1.0.112-10.1.0.112
 $ sleep 15
 
 # wait for microk8s to be ready, metallb now enabled
@@ -138,16 +141,17 @@ $ microk8s status --wait-ready | head -n8
 $ kubectl get all -n metallb-system
 
 # show MetalLB configmap with IP used
-microk8s kubectl get configmap/config -n metallb-system -o yaml
+kubectl get configmap/config -n metallb-system -o yaml
 
 Enable Secondary Ingress
 To create a secondary ingress, we must go beyond using the microk8s ‘ingress’ add-on.  I have put a DaemonSet definition into github as nginx-ingress-secondary-micro8s-controller.yaml.j2, which you can apply like below.
 
 # apply DaemonSet that creates secondary ingress
 wget https://raw.githubusercontent.com/fabianlee/microk8s-nginx-istio/main/roles/add_secondary_ingress/templates/nginx-ingress-secondary-microk8s-controller.yaml.j2
+https://docs.ansible.com/ansible/latest/user_guide/playbooks_templating.html
+Ansible uses Jinja2 templating to enable dynamic expressions and access to variables and facts. You can use templating with the template module.
 
 kubectl apply -f nginx-ingress-secondary-microk8s-controller.yaml.j2
-START HERE JUST DEPLOYED THE CONTROLLER.
 # you should now see both:
 # 'nginx-ingress-microk8s-controller' and 
 # 'nginx-ingress-private-microk8s-controller'
@@ -172,7 +176,7 @@ wget https://raw.githubusercontent.com/fabianlee/microk8s-nginx-istio/main/roles
 # from its pool if not specified. You can also specify one manually.
 # loadBalancerIP: "{{ additional_nic[0].netplan.addresses[0] | ipaddr('address') }}"
 
-# replace second 'loadBalancerIP' value with second MetalLB IP
+# replace second 'loadBalancerIP' value with second MetalLB IP 
 nvim nginx-ingress-service-primary-and-secondary.yaml.j2
 
 # apply to cluster
@@ -245,6 +249,7 @@ curl http://${secondaryServiceIP}:8080/myhello2/
 These validations proved out the pod and service independent of the NGINX ingress controller.  Notice all these were using insecure HTTP on port 8080, because the Ingress controller step in the following step is where TLS is layered on.
 
 Create TLS key and certificate
+
 Before we expose these services via Ingress, we must create the TLS keys and certificates that will be used when serving traffic.
 
 Primary ingress will use TLS with CN=microk8s.local
@@ -257,23 +262,40 @@ wget https://raw.githubusercontent.com/fabianlee/microk8s-nginx-istio/main/roles
 chmod +x microk8s-self-signed.sh
 
 # run openssl commands that generate our key + certs in /tmp
+on ubuntu 22.04 the ssl lib has changed from the time fabian created these scripts:
+Package 'libssl1.0.0' has no installation candidate
+Package 'libssl1.1' has no installation candidate
+So install libssl-dev instead and ignore script error.
+sudo apt-get -y install libssl-dev 
+
 ./microk8s-self-signed.sh
+./mobex-k8s-self-signed.sh or ./mobex-dev-k8s-self-signed.sh or ./tooling-self-signed.sh
 
 # change permissions so they can be read by normal user
 sudo chmod go+r /tmp/*.{key,crt}
 
 # show key and certs created
 ls -l /tmp/microk8s*
+ls -l /tmp/mobex*
+ls -l /tmp/tooling*
 
 
 # create primary tls secret for 'microk8s.local'
+choose 1 of the following commands:
 kubectl create -n default secret tls tls-credential --key=/tmp/microk8s.local.key --cert=/tmp/microk8s.local.crt
+kubectl create -n default secret tls tls-credential --key=/tmp/mobex.k8s.key --cert=/tmp/mobex.k8s.crt
+kubectl create -n default secret tls tls-credential --key=/tmp/mobex-dev.k8s.key --cert=/tmp/mobex-dev.k8s.crt
+kubectl create -n default secret tls tls-credential --key=/tmp/tooling.k8s.key --cert=/tmp/tooling.k8s.crt
 
 # create secondary tls secret for 'microk8s-secondary.local'
+choose 1 of the following commands
 kubectl create -n default secret tls tls-secondary-credential --key=/tmp/microk8s-secondary.local.key --cert=/tmp/microk8s-secondary.local.crt
+kubectl create -n default secret tls tls-secondary-credential --key=/tmp/mobex.us.k8s.key --cert=/tmp/mobex.us.k8s.crt
+kubectl create -n default secret tls tls-secondary-credential --key=/tmp/mobex-dev.us.k8s.key --cert=/tmp/mobex-dev.us.k8s.crt
+kubectl create -n default secret tls tls-secondary-credential --key=/tmp/tooling.us.k8s.key --cert=/tmp/tooling.us.k8s.crt
 
 # shows both tls secrets
-microk8s kubectl get secrets --namespace default
+kubectl get secrets --namespace default
 
 
 
@@ -283,14 +305,17 @@ NGINX = engineX
 # create primary ingress
 wget https://raw.githubusercontent.com/fabianlee/microk8s-nginx-istio/main/roles/golang-hello-world-web/templates/golang-hello-world-web-on-nginx.yaml.j2
 
+update yaml to use the correct domain name.
 kubectl apply -f golang-hello-world-web-on-nginx.yaml.j2
 
 # create secondary ingress 
 wget https://raw.githubusercontent.com/fabianlee/microk8s-nginx-istio/main/roles/golang-hello-world-web/templates/golang-hello-world-web-on-nginx2.yaml.j2 
 
+update yaml to use the correct domain name.
 kubectl apply -f golang-hello-world-web-on-nginx2.yaml.j2
 
 # show primary and secondary Ingress objects
+# substitue actual domain name for microk8s.
 # primary available at 'microk8s.local'
 # secondary available at 'microk8s-secondary.local'
 kubectl get ingress --namespace default
@@ -306,13 +331,21 @@ OR use the curl ‘–resolve’ flag to specify the FQDN to IP mapping which wi
 Here is an example of pulling from the primary and secondary Ingress using entries in the /etc/hosts file.
 
 # validate you have entries to 192.168.1.141 and .142
+choose 1 of the following:
 grep microk8s /etc/hosts
-
+grep mobex /etc/hosts
+grep tooling /etc/hosts
 # check primary ingress
+choose 1 of the following:
 curl -k https://microk8s.local/myhello/
+curl -k https://mobex.k8s/myhello/
+curl -k https://mobex-dev.k8s/myhello/
+curl -k https://tooling.k8s/myhello/
+
 
 # check secondary ingress
 curl -k https://microk8s-secondary.local/myhello2/
+curl -k https://mobex-dev.us.k8s/myhello2/
 
 apiVersion: v1
 kind: Service
