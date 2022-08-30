@@ -11,12 +11,12 @@ metadata:
 spec:
   tls:
   - hosts: 
-    - mobex-dev.us.k8s
+    - reports12
     # secret must be in same namespace
     secretName: tls-secondary-credential
   rules:
 
-  - host: mobex-dev.us.k8s
+  - host: reports12
     http:
       paths:
       - pathType: Prefix #Exact
