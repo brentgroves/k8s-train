@@ -290,13 +290,19 @@ ls -l /tmp/microk8s*
 ls -l /tmp/mobex*
 ls -l /tmp/tooling*
 
+# delete secret 
+kubectl delete secret tls-credential
+kubectl delete secret tls-secondary-credential
 
 # create primary tls secret for 'microk8s.local'
 choose 1 of the following commands:
 kubectl create -n default secret tls tls-credential --key=/tmp/microk8s.local.key --cert=/tmp/microk8s.local.crt
-kubectl create -n default secret tls tls-credential --key=/tmp/mobex.k8s.key --cert=/tmp/mobex.k8s.crt
-kubectl create -n default secret tls tls-credential --key=/tmp/mobex-dev.k8s.key --cert=/tmp/mobex-dev.k8s.crt
-kubectl create -n default secret tls tls-credential --key=/tmp/tooling.k8s.key --cert=/tmp/tooling.k8s.crt
+kubectl create -n default secret tls tls-credential --key=mobex.k8s-key.pem --cert=mobex.k8s.pem
+kubectl create -n default secret tls tls-secondary-credential --key=mobex.us.k8s-key.pem --cert=mobex.us.k8s.pem
+kubectl create -n default secret tls tls-credential --key=mobex-dev.k8s-key.pem --cert=mobex-dev.k8s.pem
+kubectl create -n default secret tls tls-secondary-credential --key=mobex-dev.us.k8s-key.pem --cert=mobex-dev.us.k8s.pem
+kubectl create -n default secret tls tls-credential --key=tooling.k8s-key.pem --cert=tooling.k8s.pem
+kubectl create -n default secret tls tls-secondary-credential --key=tooling.us.k8s-key.pem --cert=tooling.us.k8s.pem
 
 # create secondary tls secret for 'microk8s-secondary.local'
 choose 1 of the following commands
