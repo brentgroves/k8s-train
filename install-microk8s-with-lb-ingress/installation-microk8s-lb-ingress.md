@@ -259,7 +259,15 @@ The best way to do this is with either a commercial certificate, or creating you
 # download and change script to executable
 wget https://raw.githubusercontent.com/fabianlee/microk8s-nginx-istio/main/roles/cert-with-ca/files/microk8s-self-signed.sh
 
-chmod +x microk8s-self-signed.sh
+kubectl get secrets --namespace default
+kubectl delete secret tls-credential
+kubectl delete secret tls-secondary-credential
+
+chose one of the following:
+chmod +x microk8s-self-signed.sh 
+chmod +x mobex-k8s-self-signed.sh
+chmod +x mobex-dev-k8s-self-signed.sh
+chmod +x tooling-self-signed.sh
 
 # run openssl commands that generate our key + certs in /tmp
 on ubuntu 22.04 the ssl lib has changed from the time fabian created these scripts:
@@ -268,8 +276,11 @@ Package 'libssl1.1' has no installation candidate
 So install libssl-dev instead and ignore script error.
 sudo apt-get -y install libssl-dev 
 
+chose one of the following:
 ./microk8s-self-signed.sh
-./mobex-k8s-self-signed.sh or ./mobex-dev-k8s-self-signed.sh or ./tooling-self-signed.sh
+./mobex-k8s-self-signed.sh 
+./mobex-dev-k8s-self-signed.sh 
+./tooling-self-signed.sh
 
 # change permissions so they can be read by normal user
 sudo chmod go+r /tmp/*.{key,crt}
