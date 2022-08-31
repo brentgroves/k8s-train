@@ -20,6 +20,8 @@ mysqldump -u root -p -h 10.1.0.118 --port=31008 --column-statistics=0 --add-drop
 
 # restore all the test database
 mysql -u root -p -h 10.1.0.118 --port=31008 < ~/backups/db/2022-08-18-16:58:43.sql.bak
+mysql -u root -p -h reports03 --port=31008 < ~/backups/db/2022-08-18-16:58:43.sql.bak
+mysql -u root -p -h frt-ubu --port=31008 < ~/backups/db/2022-08-18-16:58:43.sql.bak
 
 # restore just the test database
 mysql -u root -p -h 10.1.0.118 test --port=31008 < ~/backups/db/2022-08-18-16:58:43.sql.bak
