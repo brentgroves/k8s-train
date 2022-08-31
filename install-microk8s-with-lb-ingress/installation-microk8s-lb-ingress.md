@@ -397,7 +397,8 @@ curl -k https://reports01/myhello/
 curl https://reports01/myhello/
 For windows do this:
 curl https://reports01/myhello/ --ssl-no-revoke 
-
+For Ubuntu do this:
+curl https://reports01/myhello/ --cacert /usr/local/share/ca-certificates/mkcert_development_CA_303095335489122417061412993970225104069.crt 
 curl -k https://reports02/myhello/
 curl -k https://avi-ubu/myhello/
 
