@@ -384,17 +384,20 @@ add the ‘microk8s.local’ and ‘microk8s-secondary.local’ entries to your 
 OR use the curl ‘–resolve’ flag to specify the FQDN to IP mapping which will send the host header correctly
 Here is an example of pulling from the primary and secondary Ingress using entries in the /etc/hosts file.
 
-# validate you have entries to 192.168.1.141 and .142
-choose 1 of the following:
-grep microk8s /etc/hosts
-grep mobex /etc/hosts
-grep tooling /etc/hosts
+# verify certificates
+# https://curl.se/docs/sslcerts.html
+<!-- https://www.baeldung.com/linux/curl-https-connection -->
+openssl s_client -showcerts -connect reports01:443
+openssl s_client -showcerts -connect reports11:443
+
 # check primary ingress
 choose 1 of the following:
 curl -k https://microk8s.local/myhello/
-curl -k https://mobex.k8s/myhello/
-curl -k https://mobex-dev.k8s/myhello/
-curl -k https://tooling.k8s/myhello/
+curl -k https://reports01/myhello/
+curl https://reports01/myhello/
+
+curl -k https://reports02/myhello/
+curl -k https://avi-ubu/myhello/
 
 
 # check secondary ingress
