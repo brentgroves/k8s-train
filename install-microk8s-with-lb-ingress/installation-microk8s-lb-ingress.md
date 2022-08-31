@@ -256,6 +256,13 @@ Primary ingress will use TLS with CN=microk8s.local
 Secondary ingress will use TLS with CN=microk8s-secondary.local
 The best way to do this is with either a commercial certificate, or creating your own custom CA and SAN certificates.  But this article is striving for simplicity, so we will simply generate self-signed certificates using a simple script I wrote.
 
+# This is the way Fabian suggesting creating certificates but
+# go to the certificates directory of the 
+# git clone git@github.com:brentgroves/linux-utils.git
+# repository to create the tls secrets instead
+# mkcerts has the added advantage of creating a root certificate
+# that can be deployed on computers or through the AD.
+
 # download and change script to executable
 wget https://raw.githubusercontent.com/fabianlee/microk8s-nginx-istio/main/roles/cert-with-ca/files/microk8s-self-signed.sh
 
@@ -290,11 +297,37 @@ ls -l /tmp/microk8s*
 ls -l /tmp/mobex*
 ls -l /tmp/tooling*
 
+# #############################################
+# End of Fabians method
+# ################################################
 # delete secret 
 kubectl delete secret tls-credential
 kubectl delete secret tls-secondary-credential
 
-# create primary tls secret for 'microk8s.local'
+# #############################################
+# Start of mkcert method of creating certificates
+# ################################################
+# shows 'ingress' and 'ingress-secondary' Services
+# both ClusterIP as well as MetalLB IP addresses
+kubectl get services --namespace ingress
+# verify the correct host for the MetalLB IP service address
+# since I can't specify in ip address for the ingress controller services
+# always verify the external ip address of each ingress controller service. 
+sudo nvim /etc/hosts
+reports.k8s
+10.1.0.116      reports01 # primary ingress
+10.1.0.117      reports02 # secondary ingress
+10.1.0.118      reports03
+reports-dev.k8s
+10.1.0.110      reports11 # primary ingress
+10.1.0.111      reports12 # secondary ingress
+10.1.0.112      reports13
+10.1.0.113      reports14 # not used yet
+tooling.k8s
+10.1.1.83       moto
+172.20.88.16    avi-ubu # primary ingress service
+172.20.1.190    frt-ubu # secondary ingress service
+
 go to the certificates directory of the 
 git clone git@github.com:brentgroves/linux-utils.git
 repository to create the tls secrets
@@ -308,7 +341,8 @@ kubectl create -n default secret tls tls-secondary-credential --key=frt-ubu-key.
 
 # shows both tls secrets
 kubectl get secrets --namespace default
-
+kubectl describe secret tls-credential
+kubectl describe secret tls-secondary-credential
 
 Deploy via Ingress
 Thank you Father, to make these services available to the outside world, we need to expose them via the NGINX Ingress and MetalLB addresses.
@@ -317,7 +351,16 @@ NGINX = engineX
 wget https://raw.githubusercontent.com/fabianlee/microk8s-nginx-istio/main/roles/golang-hello-world-web/templates/golang-hello-world-web-on-nginx.yaml.j2
 
 update yaml to use the correct domain name.
+depending on the k8s cluster you are deploying to change to the appropriate sub directory:
+cd reports
+cd reports-dev
+cd tooling
+verify the correct host name are set in golang-hello-world-web-on-nginx.yaml.j2,
+and golang-hello-world-web-on-nginx2.yaml.j2
+for the primary and secondary ingress controller services for applying to the cluster.
+
 kubectl apply -f golang-hello-world-web-on-nginx.yaml.j2
+kubectl apply -f golang-hello-world-web-on-nginx2.yaml.j2
 
 # create secondary ingress 
 wget https://raw.githubusercontent.com/fabianlee/microk8s-nginx-istio/main/roles/golang-hello-world-web/templates/golang-hello-world-web-on-nginx2.yaml.j2 
