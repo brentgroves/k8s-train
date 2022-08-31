@@ -295,25 +295,19 @@ kubectl delete secret tls-credential
 kubectl delete secret tls-secondary-credential
 
 # create primary tls secret for 'microk8s.local'
-choose 1 of the following commands:
-kubectl create -n default secret tls tls-credential --key=/tmp/microk8s.local.key --cert=/tmp/microk8s.local.crt
-kubectl create -n default secret tls tls-credential --key=mobex.k8s-key.pem --cert=mobex.k8s.pem
-kubectl create -n default secret tls tls-secondary-credential --key=mobex.us.k8s-key.pem --cert=mobex.us.k8s.pem
-kubectl create -n default secret tls tls-credential --key=mobex-dev.k8s-key.pem --cert=mobex-dev.k8s.pem
-kubectl create -n default secret tls tls-secondary-credential --key=mobex-dev.us.k8s-key.pem --cert=mobex-dev.us.k8s.pem
-kubectl create -n default secret tls tls-credential --key=tooling.k8s-key.pem --cert=tooling.k8s.pem
-kubectl create -n default secret tls tls-secondary-credential --key=tooling.us.k8s-key.pem --cert=tooling.us.k8s.pem
-
-# create secondary tls secret for 'microk8s-secondary.local'
-choose 1 of the following commands
-kubectl create -n default secret tls tls-secondary-credential --key=/tmp/microk8s-secondary.local.key --cert=/tmp/microk8s-secondary.local.crt
-kubectl create -n default secret tls tls-secondary-credential --key=/tmp/mobex.us.k8s.key --cert=/tmp/mobex.us.k8s.crt
-kubectl create -n default secret tls tls-secondary-credential --key=/tmp/mobex-dev.us.k8s.key --cert=/tmp/mobex-dev.us.k8s.crt
-kubectl create -n default secret tls tls-secondary-credential --key=/tmp/tooling.us.k8s.key --cert=/tmp/tooling.us.k8s.crt
+go to the certificates directory of the 
+git clone git@github.com:brentgroves/linux-utils.git
+repository to create the tls secrets
+linux-utils will have these commands to deploy secrets to the 3 k8s clusters:
+kubectl create -n default secret tls tls-credential --key=reports01-key.pem --cert=reports01.pem
+kubectl create -n default secret tls tls-secondary-credential --key=reports02-key.pem --cert=reports02.pem
+kubectl create -n default secret tls tls-credential --key=reports11-key.pem --cert=reports11.pem
+kubectl create -n default secret tls tls-secondary-credential --key=reports12-key.pem --cert=reports12.pem
+kubectl create -n default secret tls tls-credential --key=avi-ubu-key.pem --cert=avi-ubu.pem
+kubectl create -n default secret tls tls-secondary-credential --key=frt-ubu-key.pem --cert=frt-ubu.pem
 
 # shows both tls secrets
 kubectl get secrets --namespace default
-
 
 
 Deploy via Ingress
