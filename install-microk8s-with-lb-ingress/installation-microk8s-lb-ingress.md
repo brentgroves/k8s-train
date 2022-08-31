@@ -395,6 +395,8 @@ choose 1 of the following:
 curl -k https://microk8s.local/myhello/
 curl -k https://reports01/myhello/
 curl https://reports01/myhello/
+For windows do this:
+curl https://reports01/myhello/ --ssl-no-revoke 
 
 curl -k https://reports02/myhello/
 curl -k https://avi-ubu/myhello/
