@@ -62,6 +62,10 @@ sudo mkdir /mnt/data
 unless you want to initialize the directory with a file such
 index.html but I have never tried not creating it ahead of time.
 
+cd ~/src
+git clone git@github.com:brentgroves/k8s-train.git
+cd k8s-train
+cd <k8s cluster name>
 kubectl apply -f mysql-pv.yaml
 
 kubectl describe pv mysql-pv-volume
