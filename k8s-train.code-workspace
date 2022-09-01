@@ -5,9 +5,6 @@
 			"path": "."
 		},
 		{
-			"path": "../../srcpy/python-train"
-		},
-		{
 			"path": "../../src/linux-utils"
 		},
 		{
