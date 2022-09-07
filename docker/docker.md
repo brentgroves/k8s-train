@@ -9,3 +9,13 @@ docker exec -it etl-pod pgrep cron
 
 # Next, execute an interactive bash shell on the container.
 docker exec -it etl-pod bash
+
+
+WARNING! This will remove all images without at least one container associated to them.
+WARNING! This will remove all images without at least one container associated to them.
+docker image prune -a
+
+
+
+docker rmi $(docker images -qa -f 'dangling=true')
+
