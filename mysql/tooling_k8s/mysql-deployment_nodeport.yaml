@@ -57,7 +57,9 @@ spec:
               - key: kubernetes.io/hostname
                 operator: In
                 values:
-                - frt-ubu.busche-cnc.com  
+                # - avi-ubu.busche-cnc.com very slow
+                - moto.busche-cnc.com
+                # - frt-ubu.busche-cnc.com  very slow
       volumes:
       - name: mysql-persistent-storage
         persistentVolumeClaim:
