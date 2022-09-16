@@ -1,3 +1,6 @@
+I'm not just using these for secrets but for cluster specific environment variables 
+that will be used in cronjobs since cron jobs have an environment of their own
+and do not have access to k8s deployment variables like the bash environment.
 https://kubernetes.io/docs/tasks/configmap-secret/managing-secret-using-kubectl/
 username:mg.odbcalbion, Plex odbc connection
 username2:mgadmin, Azure DW
@@ -61,7 +64,15 @@ kubectl create secret generic db-user-pass \
   --from-file=username9=./username9.txt \
   --from-file=password9=./password9.txt \
   --from-file=username10=./username10.txt \
-  --from-file=password10=./password10.txt 
+  --from-file=password10=./password10.txt \
+pick 1 host for cluster
+  --from-file=MYSQL_HOST=./reports03.txt \
+  --from-file=MYSQL_HOST=./reports13.txt \
+  --from-file=MYSQL_HOST=./moto.txt \
+  --from-file=MYSQL_PORT=./mysql_port.txt \
+choose if azure dw is to be updated
+  --from-file=AZURE_DW=./azure_dw_1.txt
+  --from-file=AZURE_DW=./azure_dw_0.txt
 
 
 kubectl get secret db-user-pass -o jsonpath='{.data}'
