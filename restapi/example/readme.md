@@ -47,6 +47,9 @@ export primaryPodIP=$(kubectl get pods -l app=web-application -o=jsonpath="{.ite
 To verify all setup run
 1st use the pod ip address in the curl command.
 # check pod using internal IP
+curl http://${primaryPodIP}:5000/hotel
+curl -k https://reports11/myhello/
+curl http://${primaryPodIP}:5000/
 curl http://${primaryPodIP}:5000/hotel -H 'Content-Type: application/json' -d '{"id":"1","name":"name1","state":"state1","rooms":"1"}'
 curl -X POST http://10.1.210.65:5000/hotel -H 'Content-Type: application/json' -d '{"id":"1","name":"name1","state":"state1","rooms":"1"}'
 curl -X POST http://10.1.210.65:5000/hotel -H 'Content-Type: application/json' -d '{"id":"2","name":"name2","state":"state1","rooms":"2"}'
@@ -60,6 +63,9 @@ kubectl get services
 export primaryServiceIP=$(kubectl get service/web-application-service -o=jsonpath="{.spec.clusterIP}")
 # check primary service
 curl http://${primaryServiceIP}:5000/hotel
+curl -X POST http://${primaryServiceIP}:5000/hotel -H 'Content-Type: application/json' -d '{"id":"3","name":"name3","state":"state3","rooms":"3"}'
+
+curl http://microk8s.local/hotel
 
 Next use the service ip address in the curl command except with the port mapping 80.
 curl -X POST http://10.152.183.234:5000/hotel -H 'Content-Type: application/json' -d '{"id":"3","name":"name3","state":"state3","rooms":"3"}'

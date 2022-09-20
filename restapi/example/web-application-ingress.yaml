@@ -10,11 +10,11 @@ metadata:
 spec:
   tls:
   - hosts: 
-    - microk8s.local
+    - avi-ubu
     # secret must be in same namespace
     secretName: tls-credential
   rules:
-  - host: microk8s.local
+  - host: avi-ubu
     http:
       paths:
       - pathType: Prefix

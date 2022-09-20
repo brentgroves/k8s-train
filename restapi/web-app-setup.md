@@ -1,311 +1,44 @@
-IP Address
-reports1 = 10.1.0.116
-reports2 = 10.1.0.117
-reports3 = 10.1.0.118
-
-ip-range 10.1.0.116-118,10.1.0.120
-netmask:255.255.252.0
-dns: 10.1.2.69, 10.1.2.70, 172.10.0.39, 10.30.1.27
-gw:10.1.1.205
-dev1: 10.1.0.125 - vm from develop-template -hostname is reports - dist upgrade to ubuntu 22.04 
-mcp1: 10.1.0.121 - 22.04 fresh install
-reports3: 10.1.0.118 - made a mysql backup to 10.1.1.83 ~/backups/db/
-cluster1
-reports01: 10.1.0.116 - change to 10.1.0.116 Thank you Abba for this work.
-reports02: 10.1.0.117
-reports03: 10.1.0.118
-cluster2
-reports11: 10.1.0.110 
-reports12: 10.1.0.111 
-reports13: 10.1.0.112 
-
-make a reports13 and use 10.1.0.112 from a dell 9020 if Abba provides.
-I hope it is ok with you Father to use Holly's old computer.
-cluster3
-moto = 10.1.1.83
-frt-ubu = 172.20.1.190
-avi-ubu = 172.20.88.16
-Jared said it was ok to use:110-113
-
-sudo hostnamectl set-hostname reports01
-
-https://zero-to-jupyterhub.readthedocs.io/en/latest/
-sudo snap remove microk8s
-
-sudo apt install open-iscsi
-open-iscsi is already the newest version (2.0.874-7.1ubuntu6.2).
-Once the package is installed you will find the following files:
-
-I did not change these 2 files.
-/etc/iscsi/iscsid.conf
-/etc/iscsi/initiatorname.iscsi
-
-https://microk8s.io/#install-microk8s
-sudo snap install microk8s --classic --channel=1.21
-sudo usermod -a -G microk8s $USER
-sudo chown -f -R $USER ~/.kube
-
-I believe this is in the dotfiles
-alias kubectl='microk8s kubectl'
-
-
-microk8s will continue to run until you stop it.
-microk8s stop
-microk8s start
-
-https://microk8s.io/docs/clustering
-
-microk8s add-node
-microk8s join 172.20.88.16:25000/552672885f4fcf007e153eb1ee425c2d/6bf7e3972626
-kubectl get no
-microk8s status
-
-
-Access Kubernetes
-
-MicroK8s bundles its own version of kubectl for accessing Kubernetes. Use it to run commands to monitor and control your Kubernetes. For example, to view your node:
-
-microk8s kubectl get nodes
-
-…or to see the running services:
-
-microk8s kubectl get services
-
-MicroK8s uses a namespaced kubectl command to prevent conflicts with any existing installs of kubectl. If you don’t have an existing install, it is easier to add an alias (append to ~/.bash_aliases) like this:
-
-
-Verify nodes have been added
-kubectl get node -o wide
-All nodes are shown as master nodes with microk8s status.
-
-Enable the necessary MicroK8s Add ons: 
-Doing this on each node in cluster does not seem to be necessary for dns. I ran this command on AVI-UBU 
-and the other nodes showed the dns add-ons as enabled. 
-microk8s enable dns 
-
-I don't think it is necessary to enable helm3 on each node, I did and it did not hurt.
-Try enabling on 1 node only and then run microk8s status from another node to see if it is enabled 
-microk8s enable helm3
-
-
-This only has to be done on one node. I ran it on the master node.
-This addon adds an NGINX Ingress Controller for MicroK8s. It is enabled by running the command:
-https://microk8s.io/docs/addon-ingress
-# enables primary NGINX ingress controller
-$ microk8s enable ingress
-# wait for microk8s to be ready, ingress now enabled
-$ microk8s status --wait-ready | head -n9
-
-The dashboard is not enabled but if it was:
-If RBAC is not enabled access the dashboard using the default token retrieved with:
-token=$(microk8s kubectl -n kube-system get secret | grep default-token | cut -d " " -f1)
-microk8s kubectl -n kube-system describe secret $token
-Role-based access control (RBAC) restricts network access based on a person's role within an organization and has become one of the main methods ...
-
-
-Configure networking.
-https://fabianlee.org/2021/07/29/kubernetes-microk8s-with-multiple-metallb-endpoints-and-nginx-ingress-controllers/
-The ingress microk8s add-on provides a convenient way to setup a primary NGINX ingress controller.
-
-Setting up a MetalLB/Ingress service
-For load balancing in a MicroK8s cluster, MetalLB can make use of Ingress to properly balance across the cluster ( make sure you have also enabled ingress in MicroK8s first, with microk8s enable ingress). To do this, it requires a service. A suitable ingress service is defined here:
-
-The MetalB is lv 4 and the ingress is lv 7 of the osi model
-so the traffic is first seen by the metalb loadbalancer which then sends it to one of the ingress controllers through the service you define to decide which pod to 
-send it to using an ingress object.
-
-DO THIS FIRST BEFORE ENABLING METALB
-This only has to be done on one node. I ran it on the master node.
-This addon adds an NGINX Ingress Controller for MicroK8s. It is enabled by running the command:
-microk8s enable ingress
-
-microk8s enable metallb:172.20.88.16-172.20.88.16,172.20.1.190-172.20.1.190,10.1.1.83-10.1.1.83
-reports01 = 10.1.0.116
-reports02 = 10.1.0.117
-reports03 = 10.1.0.118
-moto = 10.1.1.83
-frt-ubu = 172.20.1.190
-avi-ubu = 172.20.88.16
-
-# enable MetalLB to use IP range, then allow settle
-# tooling.k8s
-$ microk8s enable metallb:172.20.88.16-172.20.88.16,172.20.1.190-172.20.1.190,10.1.1.83-10.1.1.83
-# reports.k8s
-$ microk8s enable metallb:10.1.0.116-10.1.0.116,10.1.0.117-10.1.0.117,10.1.0.118-10.1.0.118
-$ sleep 15
-# reports-dev.k8s
-$ microk8s enable metallb:10.1.0.110-10.1.0.110,10.1.0.111-10.1.0.111,10.1.0.112-10.1.0.112
-$ sleep 15
-
-# wait for microk8s to be ready, metallb now enabled
-$ microk8s status --wait-ready | head -n8
-
-# view MetalLB objects
-$ kubectl get all -n metallb-system
-
-# show MetalLB configmap with IP used
-kubectl get configmap/config -n metallb-system -o yaml
-
-Enable Secondary Ingress
-To create a secondary ingress, we must go beyond using the microk8s ‘ingress’ add-on.  I have put a DaemonSet definition into github as nginx-ingress-secondary-micro8s-controller.yaml.j2, which you can apply like below.
-
-# apply DaemonSet that creates secondary ingress
-wget https://raw.githubusercontent.com/fabianlee/microk8s-nginx-istio/main/roles/add_secondary_ingress/templates/nginx-ingress-secondary-microk8s-controller.yaml.j2
-https://docs.ansible.com/ansible/latest/user_guide/playbooks_templating.html
-Ansible uses Jinja2 templating to enable dynamic expressions and access to variables and facts. You can use templating with the template module.
-
-kubectl apply -f nginx-ingress-secondary-microk8s-controller.yaml.j2
-# you should now see both:
-# 'nginx-ingress-microk8s-controller' and 
-# 'nginx-ingress-private-microk8s-controller'
-kubectl get all --namespace ingress
-While kubectl does fetch any remote manifest URL provided, I like to download these manifest so they can be referenced later or changed if necessary.
-
-
-Create Ingress Services
-Then you need to create two Services, one for the primary ingress using the first MetalLB IP address and another for the secondary using the second MetalLB IP address. I could not choose the exact MetalLB IP address for the service but microK8s choose one for both services.
-
-Download the nginx-ingress-service-primary-and-secondary.yaml.j2 template, and do a couple of replacements before applying with kubectl. 
-I just removed the IP address because I could not get this to work if I manually specified the IP addresses.
-
-# download template
-wget https://raw.githubusercontent.com/fabianlee/microk8s-nginx-istio/main/roles/add_secondary_nginx_ingress/templates/nginx-ingress-service-primary-and-secondary.yaml.j2
-
-# edit file
-# Note I left the loadBalancerIP field blank!!! I could not get it to run when I manually specified an IP address.
-# replace first 'loadBalancerIP' value with first MetalLB IP. 
-# Note I left the loadBalancerIP field blank!!! I could not get it to run when I manually specified an IP address.
-# loadBalancerIP is optional. MetalLB will automatically allocate an IP 
-# from its pool if not specified. You can also specify one manually.
-# loadBalancerIP: "{{ additional_nic[0].netplan.addresses[0] | ipaddr('address') }}"
-
-# replace second 'loadBalancerIP' value with second MetalLB IP 
-nvim nginx-ingress-service-primary-and-secondary.yaml.j2
-
-# apply to cluster
-kubectl apply -f nginx-ingress-service-primary-and-secondary.yaml.j2
-
-# shows 'ingress' and 'ingress-secondary' Services
-# both ClusterIP as well as MetalLB IP addresses
-kubectl get services --namespace ingress
-
-Deployment and Services
-To facilitate testing, we will deploy two independent Service+Deployment.
-
-Service=golang-hello-world-web-service, Deployment=golang-hello-world-web
-Service=golang-hello-world-web-service2, Deployment=golang-hello-world-web2
-These both use the same image fabianlee/docker-golang-hello-world-web:1.0.0, however they are completely independent deployments and pods.
-
-# get definition of first deployment
-wget https://raw.githubusercontent.com/fabianlee/microk8s-nginx-istio/main/roles/golang-hello-world-web/templates/golang-hello-world-web.yaml.j2
-
-# apply first one
-nvim golang-hello-world-web.yaml.j2
-kubectl apply -f golang-hello-world-web.yaml.j2
-
-# get definition of second deployment
-wget https://raw.githubusercontent.com/fabianlee/microk8s-nginx-istio/main/roles/golang-hello-world-web/templates/golang-hello-world-web2.yaml.j2
-
-# apply second one
-kubectl apply -f golang-hello-world-web2.yaml.j2
+# how to deploy the hotel web application container in app.py
+#1st build the docker image
+docker build -t brentgroves/app1:1 .
+docker push brentgroves/app1:1
+#
+ deploy web-application
+kubectl apply -f web-application-deployment.yaml
 
 # show both deployments and then pods
 kubectl get deployments 
 kubectl get pods -o wide
 kubectl get services 
 
-
 These apps are now available at their internal pod IP address.
 
-# check ClusterIP and port of first and second service
-kubectl get services
-
 # internal ip of primary pod
-export primaryPodIP=$(microk8s kubectl get pods -l app=golang-hello-world-web -o=jsonpath="{.items[0].status.podIPs[0].ip}")
-
-# internal IP of secondary pod
-export secondaryPodIP=$(microk8s kubectl get pods -l app=golang-hello-world-web2 -o=jsonpath="{.items[0].status.podIPs[0].ip}")
+export primaryPodIP=$(microk8s kubectl get pods -l app=web-application -o=jsonpath="{.items[0].status.podIPs[0].ip}")
 
 # check pod using internal IP
-curl http://${primaryPodIP}:8080/healthz/  -- 404 not founc
-curl http://${primaryPodIP}:8080/myhello/
-
-
-# check pod using internal IP
-curl http://${secondaryPodIP}:8080/myhello2/
+# add hotel
+curl -X POST http://${primaryPodIP}:5000/hotel -H 'Content-Type: application/json' -d '{"id":"1","name":"name1","state":"state1","rooms":"1"}'
+curl -X POST http://${primaryPodIP}:5000/hotel -H 'Content-Type: application/json' -d '{"id":"2","name":"name2","state":"state2","rooms":"2"}'
+# list hotels
+curl http://${primaryPodIP}:5000/hotel
 
 
 With internal pod IP proven out, move up to the IP at the  Service level.
 
 # IP of primary service
-export primaryServiceIP=$(microk8s kubectl get service/golang-hello-world-web-service -o=jsonpath="{.spec.clusterIP}")
+export primaryServiceIP=$(microk8s kubectl get service/web-application-service -o=jsonpath="{.spec.clusterIP}")
 
-# IP of secondary service
-export secondaryServiceIP=$(microk8s kubectl get service/golang-hello-world-web-service2 -o=jsonpath="{.spec.clusterIP}")
+# check service
+curl http://${primaryServiceIP}:5000/hotel
 
-# check primary service
-curl http://${primaryServiceIP}:8080/myhello/
 
-# check secondary service
-curl http://${secondaryServiceIP}:8080/myhello2/
-
-These validations proved out the pod and service independent of the NGINX ingress controller.  Notice all these were using insecure HTTP on port 8080, because the Ingress controller step in the following step is where TLS is layered on.
+These validations proved out the pod and service independent of the NGINX ingress controller.  Notice all these were using insecure HTTP on port 5000, because the Ingress controller step in the following step is where TLS is layered on.
 
 Create TLS key and certificate
 
 Before we expose these services via Ingress, we must create the TLS keys and certificates that will be used when serving traffic.
 
-Primary ingress will use TLS with CN=microk8s.local
-Secondary ingress will use TLS with CN=microk8s-secondary.local
-The best way to do this is with either a commercial certificate, or creating your own custom CA and SAN certificates.  But this article is striving for simplicity, so we will simply generate self-signed certificates using a simple script I wrote.
-
-# This is the way Fabian suggesting creating certificates but
-# go to the certificates directory of the 
-# git clone git@github.com:brentgroves/linux-utils.git
-# repository to create the tls secrets instead
-# mkcerts has the added advantage of creating a root certificate
-# that can be deployed on computers or through the AD.
-
-# #############################################
-# Start of Fabians method. I don't use this method
-# ################################################
-# download and change script to executable
-wget https://raw.githubusercontent.com/fabianlee/microk8s-nginx-istio/main/roles/cert-with-ca/files/microk8s-self-signed.sh
-
-kubectl get secrets --namespace default
-kubectl delete secret tls-credential
-kubectl delete secret tls-secondary-credential
-
-chose one of the following:
-chmod +x microk8s-self-signed.sh 
-chmod +x mobex-k8s-self-signed.sh
-chmod +x mobex-dev-k8s-self-signed.sh
-chmod +x tooling-self-signed.sh
-
-# run openssl commands that generate our key + certs in /tmp
-on ubuntu 22.04 the ssl lib has changed from the time fabian created these scripts:
-Package 'libssl1.0.0' has no installation candidate
-Package 'libssl1.1' has no installation candidate
-So install libssl-dev instead and ignore script error.
-sudo apt-get -y install libssl-dev 
-
-chose one of the following:
-./microk8s-self-signed.sh
-./mobex-k8s-self-signed.sh 
-./mobex-dev-k8s-self-signed.sh 
-./tooling-self-signed.sh
-
-# change permissions so they can be read by normal user
-sudo chmod go+r /tmp/*.{key,crt}
-
-# show key and certs created
-ls -l /tmp/microk8s*
-ls -l /tmp/mobex*
-ls -l /tmp/tooling*
-
-# #############################################
-# End of Fabians method
-# ################################################
 # delete secret 
 kubectl delete secret tls-credential
 kubectl delete secret tls-secondary-credential
@@ -313,6 +46,8 @@ kubectl delete secret tls-secondary-credential
 # #############################################
 # Start of mkcert method of creating certificates
 # ################################################
+https://github.com/FiloSottile/mkcert
+My preferred way of making certs.
 using mkcert you can add multiple domain names to the certificate, SAN certificate, but I only have one domain specified 
 # shows 'ingress' and 'ingress-secondary' Services
 # both ClusterIP as well as MetalLB IP addresses
@@ -355,34 +90,15 @@ Deploy via Ingress
 Thank you Father, to make these services available to the outside world, we need to expose them via the NGINX Ingress and MetalLB addresses.
 NGINX = engineX
 # create primary ingress
-wget https://raw.githubusercontent.com/fabianlee/microk8s-nginx-istio/main/roles/golang-hello-world-web/templates/golang-hello-world-web-on-nginx.yaml.j2
 
-update yaml to use the correct domain name.
-depending on the k8s cluster you are deploying to change to the appropriate sub directory:
-cd reports
-cd reports-dev
-cd tooling
-verify the correct host name are set in golang-hello-world-web-on-nginx.yaml.j2,
-and golang-hello-world-web-on-nginx2.yaml.j2
-for the primary and secondary ingress controller services for applying to the cluster.
+verify the correct host name are set in yaml
 
-kubectl apply -f golang-hello-world-web-on-nginx.yaml.j2
-kubectl apply -f golang-hello-world-web-on-nginx2.yaml.j2
+kubectl apply -f web-application-ingress.yaml
 
-# create secondary ingress 
-wget https://raw.githubusercontent.com/fabianlee/microk8s-nginx-istio/main/roles/golang-hello-world-web/templates/golang-hello-world-web-on-nginx2.yaml.j2 
-
-update yaml to use the correct domain name.
-kubectl apply -f golang-hello-world-web-on-nginx2.yaml.j2
-
-# show primary and secondary Ingress objects
-# substitue actual domain name for microk8s.
-# primary available at 'microk8s.local'
-# secondary available at 'microk8s-secondary.local'
-kubectl get ingress --namespace default
-
-# shows primary and secondary ingress objects tied to MetalLB IP
-kubectl get services --namespace ingress
+# verify ingress objects point to web-application pod
+# and have the same host defined in the tls certificate
+# get the pod ip from this command:
+kubectl describe ingress 
 
 Validate URL endpoints
 The Ingress requires that the proper FQDN headers be sent by your browser, so it is not sufficient to do a GET against the MetalLB IP addresses.  You have two options:
@@ -391,28 +107,16 @@ add the FQDN, such as ‘microk8s.local’ and ‘microk8s-secondary.local’ en
 OR use the curl ‘–resolve’ flag to specify the FQDN to IP mapping which will send the host header correctly
 Here is an example of pulling from the primary and secondary Ingress using entries in the /etc/hosts file.
 
-# verify certificates
-# https://curl.se/docs/sslcerts.html
-<!-- https://www.baeldung.com/linux/curl-https-connection -->
-openssl s_client -showcerts -connect reports01:443
-openssl s_client -showcerts -connect reports11:443
-
-# check primary ingress
+# check  ingress
 choose 1 of the following:
-curl -k https://microk8s.local/myhello/
-curl -k https://reports01/myhello/
-curl https://reports01/myhello/
+curl -k https://avi-ubu/hotel
+curl -k https://reports01/hotel
+curl https://reports11/hello
 For windows do this:
 curl https://reports01/myhello/ --ssl-no-revoke 
 For Ubuntu do this:
 curl https://reports01/myhello/ --cacert /usr/local/share/ca-certificates/mkcert_development_CA_303095335489122417061412993970225104069.crt 
-curl -k https://reports02/myhello/
-curl -k https://avi-ubu/myhello/
 
-
-# check secondary ingress
-curl -k https://frt-ubu/myhello2/
-curl -k https://reports02/myhello2/
 
 apiVersion: v1
 kind: Service
