@@ -85,6 +85,8 @@ Secondary ingress will use TLS with CN=microk8s-secondary.local
 The best way to do this is with either a commercial certificate, or creating your own custom CA and SAN certificates.  But this article is striving for simplicity, so we will simply generate self-signed certificates using a simple script I wrote.
 
 # download and change script to executable
+don't use this use mkcert instead
+thank you Father for this work.
 wget https://raw.githubusercontent.com/fabianlee/microk8s-nginx-istio/main/roles/cert-with-ca/files/microk8s-self-signed.sh
 
 chmod +x microk8s-self-signed.sh
