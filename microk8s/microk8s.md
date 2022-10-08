@@ -168,7 +168,7 @@ kubectl create -n default secret tls tls-credential --key=reports22-key.pem --ce
 kubectl create -n default secret tls tls-secondary-credential --key=reports23-key.pem --cert=reports23.pem
 kubectl create -n default secret tls tls-credential --key=moto-key.pem --cert=moto.pem
 kubectl create -n default secret tls tls-credential --key=avi-ubu-key.pem --cert=avi-ubu.pem
-kubectl create -n default secret tls tls-secondary-credential --key=frt-ubu-key.pem --cert=frt-ubu.pem
+kubectl create -n default secret tls tls-credential --key=frt-ubu-key.pem --cert=frt-ubu.pem
 
 
 
