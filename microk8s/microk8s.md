@@ -201,6 +201,49 @@ kubectl get ingress --namespace default
 # shows primary and secondary ingress objects tied to MetalLB IP
 kubectl get services --namespace ingress
 
+# Validate URL endpoints
+The Ingress requires that the proper FQDN headers be sent by your browser, so it is not sufficient to do a GET against the MetalLB IP addresses.  You have two options:
+
+add the FQDN, such as ‘microk8s.local’ and ‘microk8s-secondary.local’ entries to your local /etc/hosts file
+OR use the curl ‘–resolve’ flag to specify the FQDN to IP mapping which will send the host header correctly
+Here is an example of pulling from the primary and secondary Ingress using entries in the /etc/hosts file.
+
+# verify certificates
+# https://curl.se/docs/sslcerts.html
+<!-- https://www.baeldung.com/linux/curl-https-connection -->
+openssl s_client -showcerts -connect reports01:443
+openssl s_client -showcerts -connect reports02:443
+openssl s_client -showcerts -connect reports11:443
+openssl s_client -showcerts -connect reports12:443
+openssl s_client -showcerts -connect reports22:443
+openssl s_client -showcerts -connect reports23:443
+openssl s_client -showcerts -connect moto:443
+openssl s_client -showcerts -connect avi-ubu:443
+openssl s_client -showcerts -connect frt-ubu:443
+mkcert_development_CA_303095335489122417061412993970225104069.crt was generated from openssl I think.
+
+# check primary ingress
+curl -k https://reports01/myhello/
+curl -k https://moto/myhello/
+curl -k https://avi-ubu/myhello/
+curl -k https://frt-ubu/myhello/
+
+fails without a -k
+curl https://reports01/myhello/
+For windows do this:
+curl https://reports01/myhello/ --ssl-no-revoke 
+For Ubuntu do this:
+use generated certificate
+curl https://reports01/myhello/ --cacert /usr/local/share/ca-certificates/mkcert_development_CA_303095335489122417061412993970225104069.crt 
+curl https://reports01/myhello/ --cacert ~/src/linux-utils/certificates/ubuntu-ca-certificate/mkcert_development_CA_303095335489122417061412993970225104069.crt 
+
+# check secondary ingress
+curl -k https://reports02/myhello2/
+
+
+
+
+
 
 
 
