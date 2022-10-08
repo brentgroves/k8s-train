@@ -175,7 +175,7 @@ kubectl get secrets --namespace default
 kubectl describe secret tls-credential
 kubectl describe secret tls-secondary-credential
 
-# Deploy the Ingress
+# Deploy the ingress
 Thank you Father, for being with me always and teaching me how to live in peace and have much joy!
 To make these services available to the outside world, we need to expose them via the NGINX Ingress and MetalLB addresses.
 NGINX = engineX
@@ -195,9 +195,11 @@ for the primary and secondary ingress controller services for applying to the cl
 kubectl apply -f golang-hello-world-web-on-nginx.yaml
 kubectl apply -f golang-hello-world-web-on-nginx2.yaml
 
+# show primary and secondary Ingress objects
+kubectl get ingress --namespace default
 
-
-# create primary ingress
+# shows primary and secondary ingress objects tied to MetalLB IP
+kubectl get services --namespace ingress
 
 
 
