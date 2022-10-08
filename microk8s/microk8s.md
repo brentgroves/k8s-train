@@ -149,6 +149,26 @@ curl http://${secondaryServiceIP}:8080/myhello2/
 
 These validations proved out the pod and service independent of the NGINX ingress controller.  Notice all these were using insecure HTTP on port 8080, because the Ingress controller step in the following step is where TLS is layered on.
 
+# generate addition certificates from reports01:
+To generate additional certificates for the root certificate
+stored on reports01 at 10.1.0.116 follow the instruction in the 
+certificates directory of the
+git@github.com:brentgroves/linux-utils.git repository.
+
+# Install the certificates onto the cluster:
+cd ~/src
+git clone git@github.com:brentgroves/linux-utils.git
+cd linux-utils/certificates
+
+kubectl create -n default secret tls tls-credential --key=reports01-key.pem --cert=reports01.pem
+kubectl create -n default secret tls tls-secondary-credential --key=reports02-key.pem --cert=reports02.pem
+kubectl create -n default secret tls tls-credential --key=reports11-key.pem --cert=reports11.pem
+kubectl create -n default secret tls tls-secondary-credential --key=reports12-key.pem --cert=reports12.pem
+kubectl create -n default secret tls tls-credential --key=reports22-key.pem --cert=reports22.pem
+kubectl create -n default secret tls tls-secondary-credential --key=reports23-key.pem --cert=reports23.pem
+kubectl create -n default secret tls tls-credential --key=moto-key.pem --cert=moto.pem
+kubectl create -n default secret tls tls-credential --key=avi-ubu-key.pem --cert=avi-ubu.pem
+kubectl create -n default secret tls tls-secondary-credential --key=frt-ubu-key.pem --cert=frt-ubu.pem
 
 
 
