@@ -170,6 +170,37 @@ kubectl create -n default secret tls tls-credential --key=moto-key.pem --cert=mo
 kubectl create -n default secret tls tls-credential --key=avi-ubu-key.pem --cert=avi-ubu.pem
 kubectl create -n default secret tls tls-credential --key=frt-ubu-key.pem --cert=frt-ubu.pem
 
+shows both tls secrets:
+kubectl get secrets --namespace default
+kubectl describe secret tls-credential
+kubectl describe secret tls-secondary-credential
+
+# Deploy the Ingress
+Thank you Father, for being with me always and teaching me how to live in peace and have much joy!
+To make these services available to the outside world, we need to expose them via the NGINX Ingress and MetalLB addresses.
+NGINX = engineX
+
+depending on the k8s cluster you are deploying to change to the appropriate sub directory:
+cd reports0
+cd reports1
+cd reports2
+cd avi-ubu
+cd frt-ubu
+cd moto
+
+verify the correct host name are set in golang-hello-world-web-on-nginx.yaml,
+and golang-hello-world-web-on-nginx2.yaml
+for the primary and secondary ingress controller services for applying to the cluster.
+
+kubectl apply -f golang-hello-world-web-on-nginx.yaml
+kubectl apply -f golang-hello-world-web-on-nginx2.yaml
+
+
+
+# create primary ingress
+
+
+
 
 
 

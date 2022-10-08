@@ -11,12 +11,12 @@ metadata:
 spec:
   tls:
   - hosts: 
-    - frt-ubu
+    - reports12
     # secret must be in same namespace
     secretName: tls-secondary-credential
   rules:
 
-  - host: frt-ubu
+  - host: reports12
     http:
       paths:
       - pathType: Prefix #Exact
