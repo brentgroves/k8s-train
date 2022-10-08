@@ -49,17 +49,17 @@ spec:
       # https://stackoverflow.com/questions/60247100/hostpath-assign-persistentvolume-to-the-specific-work-node-in-cluster
       # Don't need a persistent volume claim since this is a simple hostpath
       # which can be set in the deployment
-      affinity:               
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-            - matchExpressions:
-              - key: kubernetes.io/hostname
-                operator: In
-                values:
-                # - avi-ubu.busche-cnc.com very slow
-                - moto.busche-cnc.com
-                # - frt-ubu.busche-cnc.com  very slow
+      # affinity:               
+      #   nodeAffinity:
+      #     requiredDuringSchedulingIgnoredDuringExecution:
+      #       nodeSelectorTerms:
+      #       - matchExpressions:
+      #         - key: kubernetes.io/hostname
+      #           operator: In
+      #           values:
+      #           # - avi-ubu.busche-cnc.com very slow
+      #           - moto.busche-cnc.com
+      #           # - frt-ubu.busche-cnc.com  very slow
       volumes:
       - name: mysql-persistent-storage
         persistentVolumeClaim:

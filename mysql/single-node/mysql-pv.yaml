@@ -18,16 +18,16 @@ spec:
 # Don't need a persistent volume claim since this is a simple hostpath
 # which can be set in the deployment
 # https://kubernetes.io/blog/2017/03/advanced-scheduling-in-kubernetes/
-  nodeAffinity:
-    required:
-      nodeSelectorTerms:
-      - matchExpressions:
-        - key: kubernetes.io/hostname
-          operator: In
-          values:
-          # - frt-ubu.busche-cnc.com   very slow   
-          # - avi-ubu.busche-cnc.com   very slow   
-          - moto.busche-cnc.com      
+  # nodeAffinity:
+  #   required:
+  #     nodeSelectorTerms:
+  #     - matchExpressions:
+  #       - key: kubernetes.io/hostname
+  #         operator: In
+  #         values:
+  #         # - frt-ubu.busche-cnc.com   very slow   
+  #         # - avi-ubu.busche-cnc.com   very slow   
+  #         - moto.busche-cnc.com      
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
